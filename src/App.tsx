@@ -101,7 +101,7 @@ export default function App(){
         <div
         style={{
           marginTop: 0,
-          fontSize:25,
+          fontSize:18,
           fontFamily:"sans-serif"
         }}
         >
@@ -111,7 +111,7 @@ export default function App(){
         <div
         style={{
           marginBottom: 40,
-          fontSize:25,
+          fontSize:18,
           fontFamily:"sans-serif"
         }}
         >
@@ -148,7 +148,7 @@ export default function App(){
         <div
         style={{
           marginTop: 0,
-          fontSize:20,
+          fontSize:18,
           fontFamily:"sans-serif"
         }}
         >
@@ -158,7 +158,7 @@ export default function App(){
         <div
         style={{
           marginTop: 0,
-          fontSize:20,
+          fontSize:18,
           fontFamily:"sans-serif"
         }}
         >
@@ -185,7 +185,7 @@ export default function App(){
       margin:"30px",
       marginBottom:"-10px",
       //backgroundColor:"red",
-      fontSize:"20px",
+      fontSize:"18px",
       fontFamily:"sans-serif",
       
       height :"100px",
@@ -207,7 +207,7 @@ export default function App(){
      style={{
       margin:"30px",
       //backgroundColor:"yellow",
-      fontSize:"30px",
+      fontSize:"20px",
       fontFamily:"sans-serif",
       alignContent:"center",
       justifyItems:"center",
