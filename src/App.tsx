@@ -102,7 +102,7 @@ export default function App(){
         style={{
           marginTop: 0,
           fontSize:25,
-          fontFamily:"cursive"
+          fontFamily:"sans-serif"
         }}
         >
         Bienvenu pour une Experience
@@ -112,7 +112,7 @@ export default function App(){
         style={{
           marginBottom: 40,
           fontSize:25,
-          fontFamily:"cursive"
+          fontFamily:"sans-serif"
         }}
         >
         Inoubliable
@@ -125,7 +125,7 @@ export default function App(){
           backgroundColor: isCliked? "gold" : "black",
           marginTop: 0,
           fontSize:25,
-          fontFamily:"cursive",
+          fontFamily:"sans-serif",
           color:isCliked? "black" : "gold",
           paddingTop:5,
           paddingBottom:5,
@@ -142,14 +142,14 @@ export default function App(){
 
         
         <div>
-        Nickel Hair logo 
+        Nickel Hair 
         </div>
 
         <div
         style={{
           marginTop: 0,
-          fontSize:15,
-          fontFamily:"cursive"
+          fontSize:20,
+          fontFamily:"sans-serif"
         }}
         >
         le meilleur choix en ce qui a trait aux cheuveux et 
@@ -158,8 +158,8 @@ export default function App(){
         <div
         style={{
           marginTop: 0,
-          fontSize:15,
-          fontFamily:"cursive"
+          fontSize:20,
+          fontFamily:"sans-serif"
         }}
         >
          aux ongles, a la perfection. 
@@ -186,7 +186,7 @@ export default function App(){
       marginBottom:"-10px",
       //backgroundColor:"red",
       fontSize:"20px",
-      fontFamily:"cursive",
+      fontFamily:"sans-serif",
       
       height :"100px",
       alignContent :"center",
@@ -208,7 +208,7 @@ export default function App(){
       margin:"30px",
       //backgroundColor:"yellow",
       fontSize:"30px",
-      fontFamily:"cursive",
+      fontFamily:"sans-serif",
       alignContent:"center",
       justifyItems:"center",
       
@@ -233,7 +233,8 @@ export default function App(){
       backgroundColor :"#DEEf",
      // height :"1000px",
       alignContent:"start",
-      justifyItems:"center"
+      justifyItems:"center",
+      fontFamily:"sans-serif"
 
      }}
      >
@@ -246,9 +247,9 @@ export default function App(){
         
         marginTop:-30,
         paddingTop:0,
-        padding:25,
-        fontSize:15,
-        fontFamily:"cursive",
+        padding:30,
+        fontSize:18,
+        fontFamily:"sans-serif",
         fontWeight:"normal"
         
 
@@ -294,8 +295,8 @@ export default function App(){
             marginTop:-30,
             paddingTop:0,
             padding:25,
-            fontSize:15,
-            fontFamily:"cursive",
+            fontSize:20,
+            fontFamily:"sans-serif",
             fontWeight:"normal"
             
             
@@ -319,8 +320,8 @@ export default function App(){
             marginTop:-30,
             paddingTop:0,
             padding:25,
-            fontSize:15,
-            fontFamily:"cursive",
+            fontSize:20,
+            fontFamily:"sans-serif",
             fontWeight:"normal"
           }}
           >
@@ -338,8 +339,8 @@ export default function App(){
             marginTop:-30,
             paddingTop:0,
             padding:25,
-            fontSize:15,
-            fontFamily:"cursive",
+            fontSize:20,
+            fontFamily:"sans-serif",
             fontWeight:"normal"
           }}
           >
@@ -354,8 +355,8 @@ export default function App(){
           style={{ marginTop:-30,
             paddingTop:0,
             padding:25,
-            fontSize:15,
-            fontFamily:"cursive",
+            fontSize:20,
+            fontFamily:"sans-serif",
             fontWeight:"normal"
           }}
           > Transformez et préservez la santé de vos cheveux grâce à nos experts en mèches, balayage, soins à la kératine et lissages brésiliens. Demandez un test et une consultation gratuits.
