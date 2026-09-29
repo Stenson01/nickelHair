@@ -1,0 +1,142 @@
+.auth-view {
+  display: grid;
+  min-height: calc(100vh - 73px);
+  place-items: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+  background-color: #f4f5f0;
+  background-image: radial-gradient(#d8ddd2 0.7px, transparent 0.7px);
+  background-size: 18px 18px;
+}
+
+.auth-view__panel {
+  width: min(100%, 420px);
+  padding: 36px;
+  border: 1px solid #e1e4dc;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgb(32 35 31 / 8%);
+  box-sizing: border-box;
+}
+
+.auth-view__eyebrow {
+  margin: 0 0 8px;
+  color: #536b52;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.auth-view__title {
+  margin: 0;
+  color: #20231f;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+.auth-view__description {
+  margin: 10px 0 26px;
+  color: #62685f;
+  font-size: 15px;
+}
+
+.auth-view__form {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-view__field {
+  display: grid;
+  gap: 7px;
+  color: #30352f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.auth-view__field input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #cfd3cc;
+  border-radius: 4px;
+  color: #20231f;
+  background: #fff;
+  box-sizing: border-box;
+  font: inherit;
+  font-weight: 400;
+}
+
+.auth-view__field input:focus-visible {
+  border-color: #536b52;
+  outline: 2px solid rgb(83 107 82 / 18%);
+  outline-offset: 1px;
+}
+
+.auth-view__submit {
+  min-height: 46px;
+  margin-top: 4px;
+  border: 1px solid #263d2c;
+  border-radius: 4px;
+  color: #fff;
+  background: #263d2c;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.auth-view__submit:hover:not(:disabled) {
+  background: #38543d;
+}
+
+.auth-view__submit:focus-visible,
+.auth-view__switch:focus-visible {
+  outline: 2px solid #536b52;
+  outline-offset: 3px;
+}
+
+.auth-view__submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.auth-view__message {
+  margin: 0;
+  color: #a12f2f;
+  font-size: 14px;
+}
+
+.auth-view__message--success {
+  color: #315b39;
+}
+
+.auth-view__switch-row {
+  margin: 22px 0 0;
+  color: #62685f;
+  font-size: 14px;
+  text-align: center;
+}
+
+.auth-view__switch {
+  padding: 0;
+  border: 0;
+  color: #315b39;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .auth-view {
+    min-height: calc(100vh - 120px);
+    padding: 28px 16px;
+  }
+
+  .auth-view__panel {
+    padding: 28px 22px;
+  }
+}
