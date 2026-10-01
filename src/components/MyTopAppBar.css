@@ -10,6 +10,16 @@
   box-sizing: border-box;
 }
 
+.top-bar::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: #4169e1;
+  content: "";
+}
+
 .top-bar__main-row {
   display: flex;
   align-items: center;

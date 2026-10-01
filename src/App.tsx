@@ -244,7 +244,6 @@ export default function App() {
           <MyProductList
             selectedFilter={selectedFilter}
             searchTerm={searchTerm}
-            onSelectedFilterChange={setSelectedFilter}
             onAddToCart={addToCart}
             onSelectProduct={(product) => {
               void recordProductEvent("product_click", product);

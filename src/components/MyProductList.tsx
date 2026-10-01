@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import QuantitySelector from "./QuantitySelector";
+import { ShoppingCart } from "lucide-react";
 import { getProductCode } from "./productUtils";
 import { useLanguage } from "../i18n/useLanguage";
 import { formatCartAmount } from "../views/cartUtils";
@@ -30,7 +30,6 @@ export type ProductFilter = "home-products" | "hair-care" | null;
 type MyProductListProps = {
 	selectedFilter: ProductFilter;
 	searchTerm: string;
-	onSelectedFilterChange: (filter: ProductFilter) => void;
 	onSelectProduct: (product: Product) => void;
 	onAddToCart: (product: Product, quantity: number) => void;
 };
@@ -85,7 +84,6 @@ function productMatchesSearch(product: Product, searchTerm: string) {
 export default function MyProductList({
 	selectedFilter,
 	searchTerm,
-	onSelectedFilterChange,
 	onSelectProduct,
 	onAddToCart,
 }: MyProductListProps) {
@@ -94,7 +92,6 @@ export default function MyProductList({
 	const [products, setProducts] = useState<Product[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [errorMessage, setErrorMessage] = useState("");
-	const [quantities, setQuantities] = useState<Record<string, number>>({});
 
 	useEffect(() => {
 		if (!isSupabaseConfigured) {
@@ -141,29 +138,6 @@ export default function MyProductList({
 
 	return (
 		<section className="product-list" aria-label={t("productsTitle")}>
-			{products.length > 0 && (
-				<div className="product-type-slider" role="group" aria-label={t("productCategories")}>
-					<button
-						className={`product-type-slider__button${selectedFilter === null ? " is-active" : ""}`}
-						type="button"
-						aria-pressed={selectedFilter === null}
-						onClick={() => onSelectedFilterChange(null)}
-					>
-						{t("allProducts")}
-					</button>
-					{popularProductFilters.map((filter) => (
-						<button
-							className={`product-type-slider__button${selectedFilter === filter.id ? " is-active" : ""}`}
-							key={filter.id}
-							type="button"
-							aria-pressed={selectedFilter === filter.id}
-							onClick={() => onSelectedFilterChange(filter.id)}
-						>
-							{t(filter.label)}
-						</button>
-					))}
-				</div>
-			)}
 			{isLoading && <p role="status">{t("productsLoading")}</p>}
 			{!isLoading && errorMessage && <p role="alert">{errorMessage}</p>}
 			{!isLoading && !errorMessage && products.length === 0 && (
@@ -179,7 +153,6 @@ export default function MyProductList({
 						const name = product.name ?? product.title ?? product.product_name ?? t("unnamedProduct");
 						const imageUrl = product.image_url ?? product.image;
 						const productKey = getProductCode(product) ?? `${name}-${index}`;
-						const quantity = quantities[productKey] ?? 1;
 						const price = Number(product.price);
 
 						return (
@@ -204,22 +177,14 @@ export default function MyProductList({
 										)}
 									</div>
 								</button>
-								<QuantitySelector
-									quantity={quantity}
-									onChange={(nextQuantity) => setQuantities((current) => ({
-										...current,
-										[productKey]: nextQuantity,
-									}))}
-									label={`${t("quantity")}: ${name}`}
-									decreaseLabel={`${t("decreaseQuantity")}: ${name}`}
-									increaseLabel={`${t("increaseQuantity")}: ${name}`}
-								/>
 								<button
-									className="add-to-cart-button product-list__add-to-cart"
+									className="product-list__add-to-cart"
 									type="button"
-									onClick={() => onAddToCart(product, quantity)}
+									aria-label={`${t("addToCart")}: ${name}`}
+									title={t("addToCart")}
+									onClick={() => onAddToCart(product, 1)}
 								>
-									{t("addToCart")}
+									<ShoppingCart aria-hidden="true" />
 								</button>
 							</article>
 						);
