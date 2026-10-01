@@ -108,7 +108,7 @@ export default function MyTopAppBar({
 						<nav
 							className="top-bar__menu-dropdown"
 							id="top-bar-product-menu"
-							aria-label={t("productCategories")}
+							aria-label={t("menu")}
 						>
 							<button type="button" onClick={() => selectProductFilter(null)}>
 								{t("allProducts")}
@@ -119,6 +119,18 @@ export default function MyTopAppBar({
 							<button type="button" onClick={() => selectProductFilter("hair-care")}>
 								{t("hairCare")}
 							</button>
+							<label className="top-bar__language-option">
+								<span>{t("language")}</span>
+								<select
+									className="top-bar__language"
+									aria-label={t("language")}
+									value={language}
+									onChange={(event) => setLanguage(event.target.value as "fr" | "ht")}
+								>
+									<option value="fr">{t("french")}</option>
+									<option value="ht">{t("haitianCreole")}</option>
+								</select>
+							</label>
 						</nav>
 					)}
 				</div>
@@ -126,15 +138,6 @@ export default function MyTopAppBar({
 				<a className="top-bar__brand" href="/" aria-label="Stenson home">
 					Stenson
 				</a>
-				<select
-					className="top-bar__language"
-					aria-label={t("language")}
-					value={language}
-					onChange={(event) => setLanguage(event.target.value as "fr" | "ht")}
-				>
-					<option value="fr">{t("french")}</option>
-					<option value="ht">{t("haitianCreole")}</option>
-				</select>
 
 				{renderSearchForm("desktop")}
 

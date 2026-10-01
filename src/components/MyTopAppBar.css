@@ -47,6 +47,23 @@
   cursor: pointer;
 }
 
+.top-bar__language-option {
+  display: grid;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 10px 12px 6px;
+  border-top: 1px solid #e5e7e3;
+  color: #62685f;
+  font-size: 13px;
+}
+
+.top-bar__menu-dropdown .top-bar__language {
+  width: 100%;
+  max-width: none;
+  height: 40px;
+  font-size: 14px;
+}
+
 .top-bar__menu-dropdown button:hover {
   background: #f0f2ed;
 }
@@ -217,11 +234,6 @@
   .top-bar__brand {
     margin-right: auto;
     font-size: 20px;
-  }
-
-  .top-bar__language {
-    max-width: 92px;
-    font-size: 12px;
   }
 
   .top-bar__actions {
