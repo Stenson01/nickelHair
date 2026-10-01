@@ -26,9 +26,11 @@ export type Product = {
 };
 
 export type ProductFilter = "home-products" | "hair-care" | null;
+type ProductSort = "featured" | "price-ascending" | "price-descending" | "name-ascending";
 
 type MyProductListProps = {
 	selectedFilter: ProductFilter;
+	onSelectFilter: (filter: ProductFilter) => void;
 	searchTerm: string;
 	onSelectProduct: (product: Product) => void;
 	onAddToCart: (product: Product, quantity: number) => void;
@@ -111,6 +113,7 @@ function ProductCardSkeleton() {
 
 export default function MyProductList({
 	selectedFilter,
+	onSelectFilter,
 	searchTerm,
 	onSelectProduct,
 	onAddToCart,
@@ -120,6 +123,7 @@ export default function MyProductList({
 	const [products, setProducts] = useState<Product[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [errorMessage, setErrorMessage] = useState("");
+	const [sort, setSort] = useState<ProductSort>("featured");
 
 	useEffect(() => {
 		if (!isSupabaseConfigured) {
@@ -163,30 +167,118 @@ export default function MyProductList({
 	const visibleProducts = searchTerm.trim()
 		? categoryProducts.filter((product) => productMatchesSearch(product, searchTerm))
 		: categoryProducts;
+	const sortedProducts = [...visibleProducts].sort((first, second) => {
+		if (sort === "name-ascending") {
+			const firstName = first.name ?? first.title ?? first.product_name ?? "";
+			const secondName = second.name ?? second.title ?? second.product_name ?? "";
+			return firstName.localeCompare(secondName, language);
+		}
+
+		if (sort === "price-ascending" || sort === "price-descending") {
+			const firstPrice = Number(first.price);
+			const secondPrice = Number(second.price);
+			const firstHasPrice = first.price !== undefined && Number.isFinite(firstPrice);
+			const secondHasPrice = second.price !== undefined && Number.isFinite(secondPrice);
+
+			if (!firstHasPrice || !secondHasPrice) {
+				return firstHasPrice === secondHasPrice ? 0 : firstHasPrice ? -1 : 1;
+			}
+
+			return sort === "price-ascending" ? firstPrice - secondPrice : secondPrice - firstPrice;
+		}
+
+		return 0;
+	});
 
 	return (
 		<section className="product-list" aria-label={t("productsTitle")}>
-			{isLoading && (
-				<>
-					<p className="visually-hidden" role="status">{t("productsLoading")}</p>
-					<div className="product-list__grid" aria-hidden="true">
-						{Array.from({ length: 6 }, (_, index) => (
-							<ProductCardSkeleton key={index} />
+			<div className="product-list__layout">
+				<aside className="product-list__filters" aria-label={t("productFilters")}>
+					<fieldset className="product-list__filter-group">
+						<legend>{t("productCategories")}</legend>
+						<label>
+							<input
+								type="radio"
+								name="product-category"
+								checked={selectedFilter === null}
+								onChange={() => onSelectFilter(null)}
+							/>
+							{t("allProducts")}
+						</label>
+						{popularProductFilters.map(({ id, label }) => (
+							<label key={id}>
+								<input
+									type="radio"
+									name="product-category"
+									checked={selectedFilter === id}
+									onChange={() => onSelectFilter(id)}
+								/>
+								{t(label)}
+							</label>
 						))}
-					</div>
-				</>
-			)}
-			{!isLoading && errorMessage && <p role="alert">{errorMessage}</p>}
-			{!isLoading && !errorMessage && products.length === 0 && (
-				<p>{t("productsEmpty")}</p>
-			)}
-			{!isLoading && !errorMessage && products.length > 0 && visibleProducts.length === 0 && (
-				<p>{searchTerm.trim() ? t("noProductsForSearch") : t("noProductsForType")}</p>
-			)}
+					</fieldset>
+					<fieldset className="product-list__filter-group">
+						<legend>{t("sortProducts")}</legend>
+						<label>
+							<input
+								type="radio"
+								name="product-sort"
+								checked={sort === "featured"}
+								onChange={() => setSort("featured")}
+							/>
+							{t("featuredOrder")}
+						</label>
+						<label>
+							<input
+								type="radio"
+								name="product-sort"
+								checked={sort === "price-ascending"}
+								onChange={() => setSort("price-ascending")}
+							/>
+							{t("priceLowToHigh")}
+						</label>
+						<label>
+							<input
+								type="radio"
+								name="product-sort"
+								checked={sort === "price-descending"}
+								onChange={() => setSort("price-descending")}
+							/>
+							{t("priceHighToLow")}
+						</label>
+						<label>
+							<input
+								type="radio"
+								name="product-sort"
+								checked={sort === "name-ascending"}
+								onChange={() => setSort("name-ascending")}
+							/>
+							{t("nameAscending")}
+						</label>
+					</fieldset>
+				</aside>
+				<div className="product-list__content">
+					{isLoading && (
+						<>
+							<p className="visually-hidden" role="status">{t("productsLoading")}</p>
+							<div className="product-list__grid" aria-hidden="true">
+								{Array.from({ length: 6 }, (_, index) => (
+									<ProductCardSkeleton key={index} />
+								))}
+							</div>
+						</>
+					)}
+					{!isLoading && errorMessage && <p role="alert">{errorMessage}</p>}
+					{!isLoading && !errorMessage && products.length === 0 && (
+						<p>{t("productsEmpty")}</p>
+					)}
+					{!isLoading && !errorMessage && products.length > 0 && sortedProducts.length === 0 && (
+						<p>{searchTerm.trim() ? t("noProductsForSearch") : t("noProductsForType")}</p>
+					)}
 
-			{!isLoading && !errorMessage && products.length > 0 && (
-				<div className="product-list__grid">
-					{visibleProducts.map((product, index) => {
+					{!isLoading && !errorMessage && products.length > 0 && (
+						<div className="product-list__grid">
+							{sortedProducts.map((product, index) => {
 						const name = product.name ?? product.title ?? product.product_name ?? t("unnamedProduct");
 						const imageUrl = product.image_url ?? product.image;
 						const productKey = getProductCode(product) ?? `${name}-${index}`;
@@ -232,9 +324,11 @@ export default function MyProductList({
 								</button>
 							</article>
 						);
-					})}
+							})}
+						</div>
+					)}
 				</div>
-			)}
+			</div>
 		</section>
 	);
 }

@@ -243,6 +243,7 @@ export default function App() {
         <main className="app-main">
           <MyProductList
             selectedFilter={selectedFilter}
+            onSelectFilter={setSelectedFilter}
             searchTerm={searchTerm}
             onAddToCart={addToCart}
             onSelectProduct={(product) => {
