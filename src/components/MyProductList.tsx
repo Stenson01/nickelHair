@@ -100,6 +100,15 @@ function ProductImage({ src }: { src: string }) {
 	);
 }
 
+function ProductCardSkeleton() {
+	return (
+		<article className="product-list__item product-list__item--skeleton" aria-hidden="true">
+			<div className="product-list__media" />
+			<div className="product-list__details" />
+		</article>
+	);
+}
+
 export default function MyProductList({
 	selectedFilter,
 	searchTerm,
@@ -157,7 +166,16 @@ export default function MyProductList({
 
 	return (
 		<section className="product-list" aria-label={t("productsTitle")}>
-			{isLoading && <p role="status">{t("productsLoading")}</p>}
+			{isLoading && (
+				<>
+					<p className="visually-hidden" role="status">{t("productsLoading")}</p>
+					<div className="product-list__grid" aria-hidden="true">
+						{Array.from({ length: 6 }, (_, index) => (
+							<ProductCardSkeleton key={index} />
+						))}
+					</div>
+				</>
+			)}
 			{!isLoading && errorMessage && <p role="alert">{errorMessage}</p>}
 			{!isLoading && !errorMessage && products.length === 0 && (
 				<p>{t("productsEmpty")}</p>
@@ -179,31 +197,38 @@ export default function MyProductList({
 								className="product-list__item"
 								key={productKey}
 							>
+								<div className="product-list__visual">
+									<button
+										className="product-list__open-image"
+										type="button"
+										onClick={() => onSelectProduct(product)}
+										aria-label={`${name} — ${t("viewProductDetails")}`}
+									>
+									<div className="product-list__media">
+										{imageUrl && <ProductImage key={imageUrl} src={imageUrl} />}
+									</div>
+									</button>
+									<button
+										className="product-list__add-to-cart"
+										type="button"
+										aria-label={`${t("addToCart")}: ${name}`}
+										title={t("addToCart")}
+										onClick={() => onAddToCart(product, 1)}
+									>
+										<ShoppingCart aria-hidden="true" />
+									</button>
+								</div>
 								<button
-									className="product-list__open-details"
+									className="product-list__details product-list__details-button"
 									type="button"
 									onClick={() => onSelectProduct(product)}
 									aria-label={`${name} — ${t("viewProductDetails")}`}
 								>
-									<div className="product-list__media">
-										{imageUrl && <ProductImage key={imageUrl} src={imageUrl} />}
-									</div>
-									<div className="product-list__details">
-										<h3>{name}</h3>
-										{product.description && <p>{product.description}</p>}
-										{product.price !== undefined && Number.isFinite(price) && (
-											<span>{formatCartAmount(price, priceLocale)}</span>
-										)}
-									</div>
-								</button>
-								<button
-									className="product-list__add-to-cart"
-									type="button"
-									aria-label={`${t("addToCart")}: ${name}`}
-									title={t("addToCart")}
-									onClick={() => onAddToCart(product, 1)}
-								>
-									<ShoppingCart aria-hidden="true" />
+									<h3>{name}</h3>
+									{product.description && <p>{product.description}</p>}
+									{product.price !== undefined && Number.isFinite(price) && (
+										<span>{formatCartAmount(price, priceLocale)}</span>
+									)}
 								</button>
 							</article>
 						);
