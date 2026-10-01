@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
+import QuantitySelector from "./QuantitySelector";
+import { getProductCode } from "./productUtils";
 import { useLanguage } from "../i18n/useLanguage";
+import { formatCartAmount } from "../views/cartUtils";
 import { isSupabaseConfigured } from "../services/supabase/client";
 import { supabaseService } from "../services/supabase/service";
 import "./MyProductList.css";
 
-type Product = {
+export type Product = {
 	id?: string | number;
+	code?: string | number;
+	product_code?: string | number;
 	name?: string;
 	title?: string;
 	product_name?: string;
@@ -18,6 +23,16 @@ type Product = {
 	Category?: unknown;
 	Categories?: unknown;
 	categories?: unknown;
+};
+
+export type ProductFilter = "home-products" | "hair-care" | null;
+
+type MyProductListProps = {
+	selectedFilter: ProductFilter;
+	searchTerm: string;
+	onSelectedFilterChange: (filter: ProductFilter) => void;
+	onSelectProduct: (product: Product) => void;
+	onAddToCart: (product: Product, quantity: number) => void;
 };
 
 const popularProductFilters = [
@@ -62,12 +77,24 @@ function productMatchesFilter(product: Product, keywords: readonly string[]) {
 	return keywords.some((keyword) => searchableText.includes(normalizeProductText(keyword)));
 }
 
-export default function MyProductList() {
-	const { t } = useLanguage();
+function productMatchesSearch(product: Product, searchTerm: string) {
+	const name = product.name ?? product.title ?? product.product_name ?? "";
+	return normalizeProductText(name).includes(normalizeProductText(searchTerm.trim()));
+}
+
+export default function MyProductList({
+	selectedFilter,
+	searchTerm,
+	onSelectedFilterChange,
+	onSelectProduct,
+	onAddToCart,
+}: MyProductListProps) {
+	const { language, t } = useLanguage();
+	const priceLocale = language === "fr" ? "fr-HT" : "ht-HT";
 	const [products, setProducts] = useState<Product[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [errorMessage, setErrorMessage] = useState("");
-	const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+	const [quantities, setQuantities] = useState<Record<string, number>>({});
 
 	useEffect(() => {
 		if (!isSupabaseConfigured) {
@@ -105,9 +132,12 @@ export default function MyProductList() {
 	}, [t]);
 
 	const activeFilter = popularProductFilters.find(({ id }) => id === selectedFilter);
-	const visibleProducts = activeFilter
+	const categoryProducts = activeFilter
 		? products.filter((product) => productMatchesFilter(product, activeFilter.keywords))
 		: products;
+	const visibleProducts = searchTerm.trim()
+		? categoryProducts.filter((product) => productMatchesSearch(product, searchTerm))
+		: categoryProducts;
 
 	return (
 		<section className="product-list" aria-label={t("productsTitle")}>
@@ -117,7 +147,7 @@ export default function MyProductList() {
 						className={`product-type-slider__button${selectedFilter === null ? " is-active" : ""}`}
 						type="button"
 						aria-pressed={selectedFilter === null}
-						onClick={() => setSelectedFilter(null)}
+						onClick={() => onSelectedFilterChange(null)}
 					>
 						{t("allProducts")}
 					</button>
@@ -127,7 +157,7 @@ export default function MyProductList() {
 							key={filter.id}
 							type="button"
 							aria-pressed={selectedFilter === filter.id}
-							onClick={() => setSelectedFilter(filter.id)}
+							onClick={() => onSelectedFilterChange(filter.id)}
 						>
 							{t(filter.label)}
 						</button>
@@ -139,8 +169,8 @@ export default function MyProductList() {
 			{!isLoading && !errorMessage && products.length === 0 && (
 				<p>{t("productsEmpty")}</p>
 			)}
-			{!isLoading && !errorMessage && activeFilter && visibleProducts.length === 0 && (
-				<p>{t("noProductsForType")}</p>
+			{!isLoading && !errorMessage && products.length > 0 && visibleProducts.length === 0 && (
+				<p>{searchTerm.trim() ? t("noProductsForSearch") : t("noProductsForType")}</p>
 			)}
 
 			{!isLoading && !errorMessage && products.length > 0 && (
@@ -148,20 +178,49 @@ export default function MyProductList() {
 					{visibleProducts.map((product, index) => {
 						const name = product.name ?? product.title ?? product.product_name ?? t("unnamedProduct");
 						const imageUrl = product.image_url ?? product.image;
+						const productKey = getProductCode(product) ?? `${name}-${index}`;
+						const quantity = quantities[productKey] ?? 1;
+						const price = Number(product.price);
 
 						return (
 							<article
 								className="product-list__item"
-								key={product.id ?? `${name}-${index}`}
+								key={productKey}
 							>
-								<div className="product-list__media">
-									{imageUrl && <img src={imageUrl} alt={name} loading="lazy" />}
-								</div>
-								<div className="product-list__details">
-									<h3>{name}</h3>
-									{product.description && <p>{product.description}</p>}
-									{product.price !== undefined && <span>{product.price}</span>}
-								</div>
+								<button
+									className="product-list__open-details"
+									type="button"
+									onClick={() => onSelectProduct(product)}
+									aria-label={`${name} — ${t("viewProductDetails")}`}
+								>
+									<div className="product-list__media">
+										{imageUrl && <img src={imageUrl} alt="" loading="lazy" />}
+									</div>
+									<div className="product-list__details">
+										<h3>{name}</h3>
+										{product.description && <p>{product.description}</p>}
+										{product.price !== undefined && Number.isFinite(price) && (
+											<span>{formatCartAmount(price, priceLocale)}</span>
+										)}
+									</div>
+								</button>
+								<QuantitySelector
+									quantity={quantity}
+									onChange={(nextQuantity) => setQuantities((current) => ({
+										...current,
+										[productKey]: nextQuantity,
+									}))}
+									label={`${t("quantity")}: ${name}`}
+									decreaseLabel={`${t("decreaseQuantity")}: ${name}`}
+									increaseLabel={`${t("increaseQuantity")}: ${name}`}
+								/>
+								<button
+									className="add-to-cart-button product-list__add-to-cart"
+									type="button"
+									onClick={() => onAddToCart(product, quantity)}
+								>
+									{t("addToCart")}
+								</button>
 							</article>
 						);
 					})}

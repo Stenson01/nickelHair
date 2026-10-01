@@ -10,10 +10,20 @@
   color: #62685f;
 }
 
+.app-cart-error {
+  width: min(100% - 40px, 1200px);
+  margin: 16px auto 0;
+  color: #a12f2f;
+}
+
 @media (max-width: 640px) {
   .app-main {
     width: min(100% - 32px, 1200px);
     padding-top: 32px;
+  }
+
+  .app-cart-error {
+    width: min(100% - 32px, 1200px);
   }
 }
 

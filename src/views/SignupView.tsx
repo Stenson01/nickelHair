@@ -5,9 +5,10 @@ import "./AuthView.css";
 
 type SignupViewProps = {
 	onSwitchToLogin: () => void;
+	onSignedUp: () => void;
 };
 
-export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
+export default function SignupView({ onSwitchToLogin, onSignedUp }: SignupViewProps) {
 	const { t } = useLanguage();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -29,6 +30,7 @@ export default function SignupView({ onSwitchToLogin }: SignupViewProps) {
 				setSuccessMessage(t("checkEmailConfirmation"));
 			} else {
 				setSuccessMessage(t("accountCreated"));
+				onSignedUp();
 			}
 		} catch (error) {
 			setErrorMessage(error instanceof Error ? error.message : t("unableToCreateAccount"));

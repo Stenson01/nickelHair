@@ -5,9 +5,10 @@ import "./AuthView.css";
 
 type LoginViewProps = {
 	onSwitchToSignup: () => void;
+	onSignedIn: () => void;
 };
 
-export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
+export default function LoginView({ onSwitchToSignup, onSignedIn }: LoginViewProps) {
 	const { t } = useLanguage();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -21,7 +22,11 @@ export default function LoginView({ onSwitchToSignup }: LoginViewProps) {
 
 		try {
 			const { error } = await supabaseService.signIn(email, password);
-			if (error) setErrorMessage(error.message);
+			if (error) {
+				setErrorMessage(error.message);
+			} else {
+				onSignedIn();
+			}
 		} catch (error) {
 			setErrorMessage(error instanceof Error ? error.message : t("unableToSignIn"));
 		} finally {

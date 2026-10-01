@@ -1,0 +1,45 @@
+.quantity-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quantity-selector__button {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border: 1px solid #d9ddd6;
+  border-radius: 50%;
+  color: #30372f;
+  background: #fff;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.quantity-selector__button:hover:not(:disabled) {
+  background: #f0f2ed;
+}
+
+.quantity-selector__button:focus-visible {
+  outline: 2px solid #536b52;
+  outline-offset: 2px;
+}
+
+.quantity-selector__button:disabled {
+  color: #91968d;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.quantity-selector__button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.quantity-selector__value {
+  min-width: 24px;
+  color: #20231f;
+  font-weight: 600;
+  text-align: center;
+}

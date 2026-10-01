@@ -1,0 +1,129 @@
+.checkout-view {
+  width: min(100% - 40px, 760px);
+  margin: 0 auto;
+  padding: 32px 0 72px;
+}
+
+.checkout-view__back {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 0 14px;
+  border: 1px solid #d9ddd6;
+  border-radius: 999px;
+  color: #30372f;
+  background: #fff;
+  font: inherit;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.checkout-view__back svg {
+  width: 18px;
+  height: 18px;
+}
+
+.checkout-view__back:focus-visible {
+  outline: 2px solid #536b52;
+  outline-offset: 2px;
+}
+
+.checkout-view__panel {
+  padding: 28px;
+  border: 1px solid #e1e5df;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgb(32 35 31 / 6%);
+}
+
+.checkout-view__eyebrow {
+  margin: 0 0 8px;
+  color: #536b52;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.checkout-view__panel h1 {
+  margin: 0;
+  color: #20231f;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(28px, 4vw, 36px);
+}
+
+.checkout-view__description {
+  margin: 12px 0 24px;
+  color: #62685f;
+  line-height: 1.6;
+}
+
+.checkout-view__items {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0 0 20px;
+  border-bottom: 1px solid #e5e7e3;
+  list-style: none;
+}
+
+.checkout-view__items li,
+.checkout-view__total {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+  color: #30372f;
+}
+
+.checkout-view__items li strong {
+  flex: 0 0 auto;
+}
+
+.checkout-view__total {
+  margin-top: 20px;
+  font-size: 18px;
+}
+
+.checkout-view__total strong {
+  color: #263d2c;
+  font-size: 20px;
+}
+
+.checkout-view__note {
+  margin: 10px 0 0;
+  color: #62685f;
+  font-size: 13px;
+  text-align: right;
+}
+
+.checkout-view__error {
+  margin: 16px 0 0;
+  color: #a12f2f;
+  font-size: 14px;
+}
+
+.checkout-view__pay {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 20px;
+}
+
+.checkout-view__pay:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+@media (max-width: 640px) {
+  .checkout-view {
+    width: min(100% - 32px, 760px);
+    padding-top: 24px;
+  }
+
+  .checkout-view__panel {
+    padding: 22px 18px;
+    border-radius: 18px;
+  }
+}
