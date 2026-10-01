@@ -231,7 +231,7 @@ export class SupabaseService {
 	async getProducts() {
 		const productsWithCategories = await this.client
 			.from("Products")
-			.select("*, Categories(id, name)");
+			.select("id, name, description, price, image_url, Categories(id, name)");
 
 		if (!productsWithCategories.error) {
 			return productsWithCategories;
@@ -241,7 +241,7 @@ export class SupabaseService {
 			return productsWithCategories;
 		}
 
-		return this.client.from("Products").select("*");
+		return this.client.from("Products").select("id, name, description, price, image_url");
 	}
 }
 

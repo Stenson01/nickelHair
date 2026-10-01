@@ -81,6 +81,25 @@ function productMatchesSearch(product: Product, searchTerm: string) {
 	return normalizeProductText(name).includes(normalizeProductText(searchTerm.trim()));
 }
 
+function ProductImage({ src }: { src: string }) {
+	const [isLoaded, setIsLoaded] = useState(false);
+	const [hasError, setHasError] = useState(false);
+
+	return (
+		<div className={`product-list__image-frame${isLoaded ? " is-loaded" : ""}${hasError ? " has-error" : ""}`}>
+			<img
+				src={src}
+				alt=""
+				loading="lazy"
+				decoding="async"
+				fetchPriority="low"
+				onLoad={() => setIsLoaded(true)}
+				onError={() => setHasError(true)}
+			/>
+		</div>
+	);
+}
+
 export default function MyProductList({
 	selectedFilter,
 	searchTerm,
@@ -167,7 +186,7 @@ export default function MyProductList({
 									aria-label={`${name} — ${t("viewProductDetails")}`}
 								>
 									<div className="product-list__media">
-										{imageUrl && <img src={imageUrl} alt="" loading="lazy" />}
+										{imageUrl && <ProductImage key={imageUrl} src={imageUrl} />}
 									</div>
 									<div className="product-list__details">
 										<h3>{name}</h3>
