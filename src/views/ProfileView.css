@@ -19,7 +19,7 @@
 
 .profile-view__eyebrow {
   margin: 0 0 8px;
-  color: #536b52;
+  color: var(--brand-blue);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 1.2px;
@@ -78,10 +78,10 @@
   min-height: 44px;
   margin-top: 0;
   padding: 0 18px;
-  border: 1px solid #263d2c;
+  border: 1px solid var(--brand-orange);
   border-radius: 4px;
   color: #fff;
-  background: #263d2c;
+  background: var(--brand-orange);
   cursor: pointer;
   font: inherit;
   font-weight: 700;
@@ -100,7 +100,7 @@
 }
 
 .profile-view__sign-out:hover:not(:disabled) {
-  background: #38543d;
+  background: var(--brand-orange-dark);
 }
 
 .profile-view__cancel-sign-out:hover:not(:disabled) {
@@ -109,7 +109,7 @@
 
 .profile-view__sign-out:focus-visible,
 .profile-view__cancel-sign-out:focus-visible {
-  outline: 2px solid #536b52;
+  outline: 2px solid var(--brand-blue);
   outline-offset: 3px;
 }
 

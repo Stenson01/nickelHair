@@ -7,13 +7,19 @@ price or user ID.
 
 ## Configure and deploy
 
-Apply the migrations that create `Cart` and add the MonCash order columns before
-deploying this function. Then, from the linked Supabase project, set secrets:
+Apply the migrations that create `Cart` and the order tables before deploying
+this function. The cash-on-delivery migration creates `Orders` and `Order_Items`
+if they do not already exist and adds the delivery fields and order total. It
+also provides the `place_cash_on_delivery_order` RPC used by the checkout.
+Then, from the linked Supabase project, set secrets:
 
 ```sh
 supabase secrets set MONCASH_CLIENT_ID=your-client-id MONCASH_CLIENT_SECRET=your-client-secret MONCASH_ENVIRONMENT=sandbox
 supabase functions deploy moncash-checkout
 ```
+
+The MonCash function and cash-on-delivery RPC both store the order header in
+`public."Orders"` and its product snapshots in `public."Order_Items"`.
 
 Do not use `VITE_` variables for MonCash credentials; those would be exposed to
 the browser. The function defaults to the sandbox API. Set

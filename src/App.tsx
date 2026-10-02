@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { useLanguage } from "./i18n/useLanguage";
 import MyTopAppBar from "./components/MyTopAppBar";
@@ -12,16 +13,35 @@ import { supabaseService } from "./services/supabase/service";
 import LoginView from "./views/LoginView";
 import ProfileView from "./views/ProfileView";
 import ProductsDetailsView from "./views/ProductsDetailsView";
+import OrderHistoryView from "./views/OrderHistoryView";
 import SignupView from "./views/SignupView";
 import "./App.css";
 
-type AppView = "store" | "login" | "signup" | "profile" | "product-details" | "cart" | "checkout";
+type AppView = "store" | "login" | "signup" | "profile" | "product-details" | "cart" | "checkout" | "orders";
+
+type AppNavigationState = {
+	appNavigation: true;
+	hasPreviousAppView: boolean;
+	view: AppView;
+	selectedProduct: Product | null;
+};
 
 type PendingCartAddition = {
 	product: Product;
 	quantity: number;
 	searchTerm?: string;
 };
+
+function isAppView(value: unknown): value is AppView {
+	return value === "store" ||
+		value === "login" ||
+		value === "signup" ||
+		value === "profile" ||
+		value === "product-details" ||
+		value === "cart" ||
+		value === "checkout" ||
+		value === "orders";
+}
 
 export default function App() {
   const { t } = useLanguage();
@@ -34,8 +54,66 @@ export default function App() {
   const [isCartLoading, setIsCartLoading] = useState(false);
   const [cartRefreshVersion, setCartRefreshVersion] = useState(0);
   const [pendingCartAddition, setPendingCartAddition] = useState<PendingCartAddition | null>(null);
+  const [pendingViewAfterAuth, setPendingViewAfterAuth] = useState<AppView | null>(null);
   const [cartError, setCartError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+
+  const navigateToView = (
+    view: AppView,
+    product: Product | null = null,
+    replaceCurrent = false,
+  ) => {
+    const state: AppNavigationState = {
+      appNavigation: true,
+      hasPreviousAppView: replaceCurrent
+        ? window.history.state?.hasPreviousAppView === true
+        : window.history.state?.appNavigation === true,
+      view,
+      selectedProduct: product,
+    };
+    if (replaceCurrent) {
+      window.history.replaceState(state, "");
+    } else {
+      window.history.pushState(state, "");
+    }
+    setSelectedProduct(product);
+    setCurrentView(view);
+  };
+
+  const goBack = (fallbackView: AppView = "store") => {
+    const state = window.history.state as Partial<AppNavigationState> | null;
+    if (state?.appNavigation && state.hasPreviousAppView) {
+      window.history.back();
+      return;
+    }
+
+    navigateToView(fallbackView);
+  };
+
+  useEffect(() => {
+    const initialState: AppNavigationState = {
+      appNavigation: true,
+      hasPreviousAppView: false,
+      view: "store",
+      selectedProduct: null,
+    };
+    window.history.replaceState(initialState, "");
+
+    const restoreView = (event: PopStateEvent) => {
+      const state = event.state as Partial<AppNavigationState> | null;
+      if (!state?.appNavigation || !isAppView(state.view)) {
+        setSelectedProduct(null);
+        setCurrentView("store");
+        return;
+      }
+
+      setSelectedProduct(state.selectedProduct ?? null);
+      setCurrentView(state.view);
+    };
+
+    window.addEventListener("popstate", restoreView);
+    return () => window.removeEventListener("popstate", restoreView);
+  }, []);
 
   const recordProductEvent = async (
     eventType: "product_click" | "add_to_cart",
@@ -53,7 +131,7 @@ export default function App() {
   const handleSearchTermChange = (value: string) => {
     setSearchTerm(value);
     setSelectedFilter(null);
-    setCurrentView("store");
+    if (currentView !== "store") navigateToView("store");
   };
 
   useEffect(() => {
@@ -123,7 +201,7 @@ export default function App() {
     setCartError("");
     if (!currentUser) {
       setPendingCartAddition(addition);
-      setCurrentView("login");
+      navigateToView("login");
       return;
     }
 
@@ -134,10 +212,16 @@ export default function App() {
     if (pendingCartAddition) {
       const wasAdded = await persistCartAddition(pendingCartAddition);
       setPendingCartAddition(null);
-      setCurrentView(wasAdded ? "cart" : "profile");
+      navigateToView(wasAdded ? "cart" : "profile", null, true);
       return;
     }
-    setCurrentView("profile");
+    if (pendingViewAfterAuth) {
+      const nextView = pendingViewAfterAuth;
+      setPendingViewAfterAuth(null);
+      navigateToView(nextView, null, true);
+      return;
+    }
+    navigateToView("profile", null, true);
   };
 
   useEffect(() => {
@@ -228,12 +312,20 @@ export default function App() {
 
   return (
     <>
-      <MyTopAppBar
+      {currentView === "store" && <MyTopAppBar
         currentUser={currentUser}
-        onOpenAccount={() => setCurrentView(currentUser ? "profile" : "login")}
+        onOpenAccount={() => navigateToView(currentUser ? "profile" : "login")}
         onOpenCart={() => {
-          setCurrentView("cart");
+          navigateToView("cart");
           if (currentUser) setCartRefreshVersion((version) => version + 1);
+        }}
+        onOpenOrders={() => {
+          if (currentUser) {
+            navigateToView("orders");
+          } else {
+            setPendingViewAfterAuth("orders");
+            navigateToView("login");
+          }
         }}
         cartItemCount={cartItems.reduce((count, item) => count + item.quantity, 0)}
         selectedFilter={selectedFilter}
@@ -242,7 +334,19 @@ export default function App() {
         onSelectProductSort={setProductSort}
         searchTerm={searchTerm}
         onSearchTermChange={handleSearchTermChange}
-      />
+      />}
+      {currentView !== "store" && (
+        <div className="app-home-navigation">
+          <button
+            className="app-home-navigation__button"
+            type="button"
+            onClick={() => goBack()}
+          >
+            <ArrowLeft aria-hidden="true" />
+            {t("backToPrevious")}
+          </button>
+        </div>
+      )}
       {cartError && <p className="app-cart-error" role="alert">{cartError}</p>}
       {currentView === "store" && (
         <main className="app-main app-main--store">
@@ -255,8 +359,7 @@ export default function App() {
             onAddToCart={addToCart}
             onSelectProduct={(product) => {
               void recordProductEvent("product_click", product);
-              setSelectedProduct(product);
-              setCurrentView("product-details");
+              navigateToView("product-details", product);
             }}
           />
         </main>
@@ -264,7 +367,6 @@ export default function App() {
       {currentView === "product-details" && selectedProduct && (
         <ProductsDetailsView
           product={selectedProduct}
-          onBack={() => setCurrentView("store")}
           onAddToCart={addToCart}
         />
       )}
@@ -274,29 +376,36 @@ export default function App() {
           isLoading={isCartLoading}
           onQuantityChange={updateCartQuantity}
           onRemove={(key) => void updateCartQuantity(key, 0)}
-          onContinueShopping={() => setCurrentView("store")}
-          onCheckout={() => setCurrentView("checkout")}
+          onCheckout={() => navigateToView("checkout")}
         />
       )}
       {currentView === "checkout" && (
         <CheckoutView
           items={cartItems}
-          onBackToCart={() => setCurrentView("cart")}
           onStartPayment={async () => {
             const { paymentUrl } = await supabaseService.startMonCashCheckout();
             window.location.assign(paymentUrl);
           }}
+          onPlaceCashOnDeliveryOrder={async (details) => {
+            const { orderId } = await supabaseService.placeCashOnDeliveryOrder(details);
+            return orderId;
+          }}
+          onContinueShopping={() => {
+            setCartItems([]);
+            navigateToView("store");
+          }}
         />
       )}
+      {currentView === "orders" && <OrderHistoryView />}
       {currentView === "login" && (
         <LoginView
-          onSwitchToSignup={() => setCurrentView("signup")}
+          onSwitchToSignup={() => navigateToView("signup")}
           onSignedIn={() => void handleSignedIn()}
         />
       )}
       {currentView === "signup" && (
         <SignupView
-          onSwitchToLogin={() => setCurrentView("login")}
+          onSwitchToLogin={() => navigateToView("login")}
           onSignedUp={() => void handleSignedIn()}
         />
       )}
@@ -305,7 +414,7 @@ export default function App() {
           user={currentUser}
           onSignOut={() => {
             setCurrentUser(null);
-            setCurrentView("store");
+            navigateToView("store", null, true);
           }}
         />
       )}

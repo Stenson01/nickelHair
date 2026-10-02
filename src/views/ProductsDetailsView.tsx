@@ -1,4 +1,4 @@
-import { ArrowLeft, ShoppingBasket } from "lucide-react";
+import { ShoppingBasket } from "lucide-react";
 import { useState } from "react";
 import QuantitySelector from "../components/QuantitySelector";
 import { useLanguage } from "../i18n/useLanguage";
@@ -8,11 +8,10 @@ import "./ProductsDetailsView.css";
 
 type ProductsDetailsViewProps = {
 	product: Product;
-	onBack: () => void;
 	onAddToCart: (product: Product, quantity: number) => void;
 };
 
-export default function ProductsDetailsView({ product, onBack, onAddToCart }: ProductsDetailsViewProps) {
+export default function ProductsDetailsView({ product, onAddToCart }: ProductsDetailsViewProps) {
 	const { language, t } = useLanguage();
 	const [quantity, setQuantity] = useState(1);
 	const name = product.name ?? product.title ?? product.product_name ?? t("unnamedProduct");
@@ -22,10 +21,6 @@ export default function ProductsDetailsView({ product, onBack, onAddToCart }: Pr
 
 	return (
 		<main className="product-details">
-			<button className="product-details__back" type="button" onClick={onBack}>
-				<ArrowLeft aria-hidden="true" />
-				{t("backToProducts")}
-			</button>
 			<article className="product-details__card">
 				<div className="product-details__media">
 					{imageUrl && <img src={imageUrl} alt={name} />}

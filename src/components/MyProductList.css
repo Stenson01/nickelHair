@@ -43,7 +43,7 @@
     padding: 28px 20px;
     overflow-y: auto;
     border-right: 1px solid #d9ded5;
-    background: #f0f2ed;
+    background: #f3f6ff;
     box-sizing: border-box;
   }
 
@@ -121,7 +121,7 @@
 }
 
 .product-list__open-image:focus-visible {
-  outline: 2px solid #536b52;
+  outline: 2px solid var(--brand-blue);
   outline-offset: 2px;
 }
 
@@ -176,7 +176,7 @@
 }
 
 .product-list__details-button:focus-visible {
-  outline: 2px solid #536b52;
+  outline: 2px solid var(--brand-blue);
   outline-offset: 2px;
 }
 
@@ -219,7 +219,7 @@
   border: 0;
   border-radius: 999px;
   color: #fff;
-  background: #263d2c;
+  background: var(--brand-orange);
   box-shadow: 0 2px 4px rgb(32 35 31 / 18%);
   font: inherit;
   font-size: 14px;
@@ -231,7 +231,7 @@
 }
 
 .add-to-cart-button:hover {
-  background: #38543d;
+  background: var(--brand-orange-dark);
   box-shadow: 0 4px 8px rgb(32 35 31 / 20%);
 }
 
@@ -240,7 +240,7 @@
 }
 
 .add-to-cart-button:focus-visible {
-  outline: 2px solid #536b52;
+  outline: 2px solid var(--brand-blue);
   outline-offset: 3px;
 }
 
@@ -254,16 +254,16 @@
   width: 42px;
   height: 42px;
   padding: 0;
-  border: 1px solid #263d2c;
+  border: 1px solid var(--brand-orange);
   border-radius: 50%;
   color: #fff;
-  background: #263d2c;
+  background: var(--brand-orange);
   cursor: pointer;
   transition: background-color 150ms ease, transform 150ms ease;
 }
 
 .product-list__add-to-cart:hover {
-  background: #38543d;
+  background: var(--brand-orange-dark);
 }
 
 .product-list__add-to-cart:active {
@@ -271,7 +271,7 @@
 }
 
 .product-list__add-to-cart:focus-visible {
-  outline: 2px solid #536b52;
+  outline: 2px solid var(--brand-blue);
   outline-offset: 3px;
 }
 

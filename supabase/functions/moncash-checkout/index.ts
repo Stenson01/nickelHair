@@ -168,6 +168,7 @@ Deno.serve(async (request) => {
 				status: "pending",
 				payment_provider: "moncash",
 				moncash_order_id: orderId,
+				total_amount: amount,
 			});
 		if (orderError) throw new Error(`Unable to create order: ${orderError.message}`);
 

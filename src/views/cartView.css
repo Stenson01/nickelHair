@@ -31,7 +31,7 @@
 .cart-view__empty > svg {
   width: 36px;
   height: 36px;
-  color: #536b52;
+  color: var(--brand-orange);
 }
 
 .cart-view__empty p {
@@ -122,9 +122,8 @@
   background: #f0f2ed;
 }
 
-.cart-view__remove:focus-visible,
-.cart-view__continue:focus-visible {
-  outline: 2px solid #536b52;
+.cart-view__remove:focus-visible {
+  outline: 2px solid var(--brand-blue);
   outline-offset: 2px;
 }
 
@@ -135,33 +134,6 @@
 
 .cart-view__remove {
   color: #8b3030;
-}
-
-.cart-view__continue {
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  color: #536b52;
-  background: transparent;
-  font: inherit;
-  font-weight: 600;
-  touch-action: manipulation;
-  cursor: pointer;
-}
-
-.cart-view__continue svg {
-  width: 18px;
-  height: 18px;
-}
-
-.cart-view__continue:hover {
-  color: #263d2c;
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 .cart-view__summary {
@@ -185,7 +157,7 @@
 }
 
 .cart-view__subtotal strong {
-  color: #263d2c;
+  color: var(--brand-blue-dark);
   font-size: 20px;
 }
 
@@ -205,10 +177,6 @@
 .cart-view__checkout:disabled {
   cursor: not-allowed;
   opacity: 0.6;
-}
-
-.cart-view__summary .cart-view__continue {
-  margin-top: 12px;
 }
 
 @media (max-width: 640px) {

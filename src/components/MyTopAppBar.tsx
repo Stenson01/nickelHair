@@ -11,6 +11,7 @@ type MyTopAppBarProps = {
 	currentUser: User | null;
 	onOpenAccount: () => void;
 	onOpenCart: () => void;
+	onOpenOrders: () => void;
 	cartItemCount: number;
 	selectedFilter: ProductFilter;
 	onSelectProductFilter: (filter: ProductFilter) => void;
@@ -24,6 +25,7 @@ export default function MyTopAppBar({
 	currentUser,
 	onOpenAccount,
 	onOpenCart,
+	onOpenOrders,
 	cartItemCount,
 	selectedFilter,
 	onSelectProductFilter,
@@ -89,6 +91,12 @@ export default function MyTopAppBar({
 		</form>
 	);
 
+	const openOrders = () => {
+		setIsMenuOpen(false);
+		onOpenOrders();
+		menuButtonRef.current?.focus();
+	};
+
 	return (
 		<header className="top-bar">
 			<div className="top-bar__main-row">
@@ -111,6 +119,13 @@ export default function MyTopAppBar({
 							id="top-bar-product-menu"
 							aria-label={t("menu")}
 						>
+							<button
+								className="top-bar__menu-action"
+								type="button"
+								onClick={openOrders}
+							>
+								{t("myOrders")}
+							</button>
 							<ProductFilters
 								idPrefix="menu"
 								selectedFilter={selectedFilter}

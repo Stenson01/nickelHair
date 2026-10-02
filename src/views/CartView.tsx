@@ -1,4 +1,4 @@
-import { ArrowLeft, ShoppingBasket, Trash2 } from "lucide-react";
+import { ShoppingBasket, Trash2 } from "lucide-react";
 import QuantitySelector from "../components/QuantitySelector";
 import type { Product } from "../components/MyProductList";
 import { useLanguage } from "../i18n/useLanguage";
@@ -16,7 +16,6 @@ type CartViewProps = {
 	isLoading: boolean;
 	onQuantityChange: (key: string, quantity: number) => void;
 	onRemove: (key: string) => void;
-	onContinueShopping: () => void;
 	onCheckout: () => void;
 };
 
@@ -25,7 +24,6 @@ export default function CartView({
 	isLoading,
 	onQuantityChange,
 	onRemove,
-	onContinueShopping,
 	onCheckout,
 }: CartViewProps) {
 	const { language, t } = useLanguage();
@@ -37,14 +35,6 @@ export default function CartView({
 
 	return (
 		<main className="cart-view">
-			<button
-				className="cart-view__continue"
-				type="button"
-				onClick={onContinueShopping}
-			>
-				<ArrowLeft aria-hidden="true" />
-				{t("continueShopping")}
-			</button>
 			<h1 className="cart-view__title">{t("shoppingBasket")}</h1>
 			{isLoading ? (
 				<p className="cart-view__loading" role="status">{t("cartLoading")}</p>

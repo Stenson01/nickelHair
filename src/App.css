@@ -12,6 +12,40 @@
   padding: 32px 16px 72px;
 }
 
+.app-home-navigation {
+  width: min(100% - 40px, 900px);
+  margin: 20px auto 0;
+}
+
+.app-home-navigation__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  border: 0;
+  color: var(--brand-blue);
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.app-home-navigation__button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.app-home-navigation__button:hover {
+  color: var(--brand-orange-dark);
+}
+
+.app-home-navigation__button:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 3px;
+}
+
 .app-account-status {
   margin: 0 0 24px;
   color: #62685f;
@@ -37,6 +71,10 @@
 
   .app-cart-error {
     width: min(100% - 32px, 1200px);
+  }
+
+  .app-home-navigation {
+    width: min(100% - 32px, 900px);
   }
 }
 

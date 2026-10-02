@@ -37,9 +37,7 @@ export default function LoginView({ onSwitchToSignup, onSignedIn }: LoginViewPro
 	return (
 		<main className="auth-view">
 			<section className="auth-view__panel" aria-labelledby="login-title">
-				<p className="auth-view__eyebrow">{t("stensonAccount")}</p>
-				<h1 className="auth-view__title" id="login-title">{t("welcomeBack")}</h1>
-				<p className="auth-view__description">{t("signInDescription")}</p>
+				<h1 className="auth-view__title" id="login-title">{t("loginTitle")}</h1>
 
 				<form className="auth-view__form" onSubmit={handleSubmit}>
 					<label className="auth-view__field">
@@ -75,7 +73,7 @@ export default function LoginView({ onSwitchToSignup, onSignedIn }: LoginViewPro
 				<p className="auth-view__switch-row">
 					{t("newToStenson")} {" "}
 					<button className="auth-view__switch" type="button" onClick={onSwitchToSignup}>
-						{t("createAccount")}
+						{t("signup")}
 					</button>
 				</p>
 			</section>

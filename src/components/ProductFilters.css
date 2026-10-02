@@ -31,7 +31,7 @@
 .product-filters__group input {
 	flex: 0 0 auto;
 	margin: 2px 0 0;
-	accent-color: #263d2c;
+	accent-color: var(--brand-blue);
 }
 
 .product-filters__language {

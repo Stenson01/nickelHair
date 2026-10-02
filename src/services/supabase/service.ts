@@ -20,6 +20,36 @@ export type MonCashCheckoutResponse = {
 	paymentUrl: string;
 };
 
+export type CashOnDeliveryDetails = {
+	name: string;
+	phone: string;
+	address: string;
+};
+
+export type CashOnDeliveryResponse = {
+	orderId: string;
+};
+
+export type CustomerOrderItem = {
+	id: string;
+	product_name: string;
+	unit_price: number | string;
+	quantity: number;
+};
+
+export type CustomerOrder = {
+	id: string;
+	status: "pending" | "paid" | "completed" | "cancelled" | "refunded";
+	payment_provider: string | null;
+	total_amount: number | string;
+	delivery_name: string | null;
+	delivery_phone: string | null;
+	delivery_address: string | null;
+	created_at: string;
+	completed_at: string | null;
+	Order_Items: CustomerOrderItem[];
+};
+
 export class SupabaseService {
 	constructor(private readonly configuredClient?: SupabaseClient) {}
 
@@ -109,6 +139,45 @@ export class SupabaseService {
 		}
 
 		return data;
+	}
+
+	async placeCashOnDeliveryOrder(
+		deliveryDetails: CashOnDeliveryDetails,
+	): Promise<CashOnDeliveryResponse> {
+		const { data, error } = await this.client.rpc("place_cash_on_delivery_order", {
+			p_delivery_name: deliveryDetails.name,
+			p_delivery_phone: deliveryDetails.phone,
+			p_delivery_address: deliveryDetails.address,
+		});
+		if (error) {
+			const errorDetails = [
+				error.message,
+				error.details,
+				error.hint,
+				error.code ? `(${error.code})` : "",
+			].filter(Boolean);
+			throw new Error(errorDetails.join(" — "));
+		}
+		if (typeof data !== "string" || !data.trim()) {
+			throw new Error("The cash-on-delivery checkout returned an invalid order ID.");
+		}
+
+		return { orderId: data };
+	}
+
+	async getCustomerOrders(): Promise<CustomerOrder[]> {
+		const { data: userData, error: userError } = await this.client.auth.getUser();
+		if (userError) throw userError;
+		if (!userData.user) throw new Error("Sign in before loading your orders.");
+
+		const { data, error } = await this.client
+			.from("Orders")
+			.select("id, status, payment_provider, total_amount, delivery_name, delivery_phone, delivery_address, created_at, completed_at, Order_Items(id, product_name, unit_price, quantity)")
+			.eq("customer_id", userData.user.id)
+			.order("created_at", { ascending: false });
+		if (error) throw error;
+
+		return (data ?? []) as CustomerOrder[];
 	}
 
 	searchProducts(searchTerm: string) {

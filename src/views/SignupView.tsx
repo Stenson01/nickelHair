@@ -42,9 +42,7 @@ export default function SignupView({ onSwitchToLogin, onSignedUp }: SignupViewPr
 	return (
 		<main className="auth-view">
 			<section className="auth-view__panel" aria-labelledby="signup-title">
-				<p className="auth-view__eyebrow">{t("stensonAccount")}</p>
-				<h1 className="auth-view__title" id="signup-title">{t("createAccount")}</h1>
-				<p className="auth-view__description">{t("createAccountDescription")}</p>
+				<h1 className="auth-view__title" id="signup-title">{t("signup")}</h1>
 
 				<form className="auth-view__form" onSubmit={handleSubmit}>
 					<label className="auth-view__field">
@@ -75,7 +73,7 @@ export default function SignupView({ onSwitchToLogin, onSignedUp }: SignupViewPr
 					{errorMessage && <p className="auth-view__message" role="alert">{errorMessage}</p>}
 					{successMessage && <p className="auth-view__message auth-view__message--success" role="status">{successMessage}</p>}
 					<button className="auth-view__submit" type="submit" disabled={isSubmitting}>
-						{isSubmitting ? t("creatingAccount") : t("createAccount")}
+						{isSubmitting ? t("creatingAccount") : t("signup")}
 					</button>
 				</form>
 

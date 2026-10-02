@@ -4,9 +4,9 @@
   z-index: 20;
   width: 100%;
   padding: 12px 24px;
-  color: #20231f;
-  background: #fff;
-  border-bottom: 1px solid #e5e7e3;
+  color: #fff;
+  background: var(--brand-blue);
+  border-bottom: 1px solid var(--brand-blue-dark);
   box-sizing: border-box;
 }
 
@@ -16,7 +16,7 @@
   bottom: 0;
   left: 0;
   height: 4px;
-  background: #4169e1;
+  background: var(--brand-orange);
   content: "";
 }
 
@@ -48,6 +48,29 @@
   box-shadow: 0 8px 24px rgb(32 35 31 / 14%);
 }
 
+.top-bar__menu-action {
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 4px;
+  color: #fff;
+  background: var(--brand-blue);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.top-bar__menu-action:hover {
+  background: var(--brand-blue-dark);
+}
+
+.top-bar__menu-action:focus-visible {
+  outline: 2px solid var(--brand-orange);
+  outline-offset: 2px;
+}
+
 .top-bar__brand {
   flex: 0 0 auto;
   color: inherit;
@@ -62,9 +85,9 @@
   max-width: 122px;
   height: 36px;
   padding: 0 7px;
-  border: 1px solid #cfd3cc;
+  border: 1px solid rgb(255 255 255 / 55%);
   border-radius: 4px;
-  color: inherit;
+  color: #20231f;
   background: #fff;
   font: inherit;
   font-size: 13px;
@@ -76,7 +99,7 @@
   align-items: center;
   min-width: 0;
   height: 42px;
-  border: 1px solid #cfd3cc;
+  border: 1px solid rgb(255 255 255 / 65%);
   border-radius: 4px;
   background: #fff;
 }
@@ -100,8 +123,8 @@
 }
 
 .top-bar__search:focus-within {
-  border-color: #536b52;
-  box-shadow: 0 0 0 2px rgb(83 107 82 / 15%);
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 2px rgb(65 105 225 / 18%);
 }
 
 .top-bar__search-button,
@@ -131,7 +154,7 @@
   place-items: center;
   border-radius: 999px;
   color: #fff;
-  background: #536b52;
+  background: var(--brand-orange);
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
@@ -145,13 +168,13 @@
 
 .top-bar__icon-button:hover,
 .top-bar__search-button:hover {
-  background: #f0f2ed;
+  background: rgb(255 255 255 / 16%);
 }
 
 .top-bar__icon-button:focus-visible,
 .top-bar__search-button:focus-visible,
 .top-bar__brand:focus-visible {
-  outline: 2px solid #536b52;
+  outline: 2px solid var(--brand-orange-focus);
   outline-offset: 2px;
 }
 
@@ -171,7 +194,7 @@
   overflow: hidden;
   border-radius: 50%;
   color: #fff;
-  background: #536b52;
+  background: var(--brand-orange);
   font-size: 14px;
   font-weight: 600;
 }
