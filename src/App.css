@@ -5,6 +5,13 @@
   text-align: left;
 }
 
+.app-main--store {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 32px 16px 72px;
+}
+
 .app-account-status {
   margin: 0 0 24px;
   color: #62685f;
@@ -20,6 +27,12 @@
   .app-main {
     width: min(100% - 32px, 1200px);
     padding-top: 32px;
+  }
+
+  @media (min-width: 768px) {
+    .app-main--store {
+      padding: 0;
+    }
   }
 
   .app-cart-error {

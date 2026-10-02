@@ -1,0 +1,56 @@
+.product-filters__group {
+	display: grid;
+	gap: 12px;
+	margin: 0;
+	padding: 0 0 20px;
+	border: 0;
+	border-bottom: 1px solid #d9ded5;
+}
+
+.product-filters__group + .product-filters__group {
+	margin-top: 20px;
+}
+
+.product-filters__group legend {
+	margin-bottom: 14px;
+	color: #20231f;
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.product-filters__group label {
+	display: flex;
+	align-items: flex-start;
+	gap: 9px;
+	color: #454a43;
+	font-size: 14px;
+	line-height: 1.4;
+	cursor: pointer;
+}
+
+.product-filters__group input {
+	flex: 0 0 auto;
+	margin: 2px 0 0;
+	accent-color: #263d2c;
+}
+
+.product-filters__language {
+	display: grid;
+	gap: 8px;
+	margin-top: 20px;
+	color: #454a43;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.product-filters__language select {
+	width: 100%;
+	height: 40px;
+	padding: 0 9px;
+	border: 1px solid #cfd3cc;
+	border-radius: 4px;
+	color: inherit;
+	background: #fff;
+	font: inherit;
+	font-weight: 400;
+}

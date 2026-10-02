@@ -2,7 +2,8 @@ import type { User } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
 import { Menu, Search, ShoppingBasket, UserRound } from "lucide-react";
 import { useLanguage } from "../i18n/useLanguage";
-import type { ProductFilter } from "./MyProductList";
+import ProductFilters from "./ProductFilters";
+import type { ProductFilter, ProductSort } from "./productFilterTypes";
 import "./MyTopAppBar.css";
 
 
@@ -11,7 +12,10 @@ type MyTopAppBarProps = {
 	onOpenAccount: () => void;
 	onOpenCart: () => void;
 	cartItemCount: number;
+	selectedFilter: ProductFilter;
 	onSelectProductFilter: (filter: ProductFilter) => void;
+	productSort: ProductSort;
+	onSelectProductSort: (sort: ProductSort) => void;
 	searchTerm: string;
 	onSearchTermChange: (searchTerm: string) => void;
 };
@@ -21,11 +25,14 @@ export default function MyTopAppBar({
 	onOpenAccount,
 	onOpenCart,
 	cartItemCount,
+	selectedFilter,
 	onSelectProductFilter,
+	productSort,
+	onSelectProductSort,
 	searchTerm,
 	onSearchTermChange,
 }: MyTopAppBarProps) {
-	const { language, setLanguage, t } = useLanguage();
+	const { t } = useLanguage();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const menuRef = useRef<HTMLDivElement>(null);
 	const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -62,12 +69,6 @@ export default function MyTopAppBar({
 			document.removeEventListener("pointerdown", closeOnOutsideClick);
 		};
 	}, [isMenuOpen]);
-
-	const selectProductFilter = (filter: ProductFilter) => {
-		onSelectProductFilter(filter);
-		setIsMenuOpen(false);
-		menuButtonRef.current?.focus();
-	};
 
 	const renderSearchForm = (variant: "desktop" | "mobile") => (
 		<form
@@ -110,27 +111,13 @@ export default function MyTopAppBar({
 							id="top-bar-product-menu"
 							aria-label={t("menu")}
 						>
-							<button type="button" onClick={() => selectProductFilter(null)}>
-								{t("allProducts")}
-							</button>
-							<button type="button" onClick={() => selectProductFilter("home-products")}>
-								{t("homeProducts")}
-							</button>
-							<button type="button" onClick={() => selectProductFilter("hair-care")}>
-								{t("hairCare")}
-							</button>
-							<label className="top-bar__language-option">
-								<span>{t("language")}</span>
-								<select
-									className="top-bar__language"
-									aria-label={t("language")}
-									value={language}
-									onChange={(event) => setLanguage(event.target.value as "fr" | "ht")}
-								>
-									<option value="fr">{t("french")}</option>
-									<option value="ht">{t("haitianCreole")}</option>
-								</select>
-							</label>
+							<ProductFilters
+								idPrefix="menu"
+								selectedFilter={selectedFilter}
+								onSelectFilter={onSelectProductFilter}
+								sort={productSort}
+								onSelectSort={onSelectProductSort}
+							/>
 						</nav>
 					)}
 				</div>

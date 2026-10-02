@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { useLanguage } from "./i18n/useLanguage";
 import MyTopAppBar from "./components/MyTopAppBar";
-import MyProductList, { type Product, type ProductFilter } from "./components/MyProductList";
+import MyProductList, { type Product } from "./components/MyProductList";
+import type { ProductFilter, ProductSort } from "./components/productFilterTypes";
 import { getProductCode } from "./components/productUtils";
 import CartView, { type CartItem } from "./views/CartView";
 import CheckoutView from "./views/CheckoutView";
@@ -26,6 +27,7 @@ export default function App() {
   const { t } = useLanguage();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [selectedFilter, setSelectedFilter] = useState<ProductFilter>(null);
+  const [productSort, setProductSort] = useState<ProductSort>("featured");
   const [currentView, setCurrentView] = useState<AppView>("store");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -234,16 +236,21 @@ export default function App() {
           if (currentUser) setCartRefreshVersion((version) => version + 1);
         }}
         cartItemCount={cartItems.reduce((count, item) => count + item.quantity, 0)}
+        selectedFilter={selectedFilter}
         onSelectProductFilter={setSelectedFilter}
+        productSort={productSort}
+        onSelectProductSort={setProductSort}
         searchTerm={searchTerm}
         onSearchTermChange={handleSearchTermChange}
       />
       {cartError && <p className="app-cart-error" role="alert">{cartError}</p>}
       {currentView === "store" && (
-        <main className="app-main">
+        <main className="app-main app-main--store">
           <MyProductList
             selectedFilter={selectedFilter}
             onSelectFilter={setSelectedFilter}
+            sort={productSort}
+            onSelectSort={setProductSort}
             searchTerm={searchTerm}
             onAddToCart={addToCart}
             onSelectProduct={(product) => {

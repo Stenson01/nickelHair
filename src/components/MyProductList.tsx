@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import { getProductCode } from "./productUtils";
+import ProductFilters from "./ProductFilters";
+import type { ProductFilter, ProductSort } from "./productFilterTypes";
 import { useLanguage } from "../i18n/useLanguage";
 import { formatCartAmount } from "../views/cartUtils";
 import { isSupabaseConfigured } from "../services/supabase/client";
@@ -25,12 +27,13 @@ export type Product = {
 	categories?: unknown;
 };
 
-export type ProductFilter = "home-products" | "hair-care" | null;
-type ProductSort = "featured" | "price-ascending" | "price-descending" | "name-ascending";
+export type { ProductFilter } from "./productFilterTypes";
 
 type MyProductListProps = {
 	selectedFilter: ProductFilter;
 	onSelectFilter: (filter: ProductFilter) => void;
+	sort: ProductSort;
+	onSelectSort: (sort: ProductSort) => void;
 	searchTerm: string;
 	onSelectProduct: (product: Product) => void;
 	onAddToCart: (product: Product, quantity: number) => void;
@@ -114,6 +117,8 @@ function ProductCardSkeleton() {
 export default function MyProductList({
 	selectedFilter,
 	onSelectFilter,
+	sort,
+	onSelectSort,
 	searchTerm,
 	onSelectProduct,
 	onAddToCart,
@@ -123,7 +128,6 @@ export default function MyProductList({
 	const [products, setProducts] = useState<Product[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [errorMessage, setErrorMessage] = useState("");
-	const [sort, setSort] = useState<ProductSort>("featured");
 
 	useEffect(() => {
 		if (!isSupabaseConfigured) {
@@ -194,68 +198,13 @@ export default function MyProductList({
 		<section className="product-list" aria-label={t("productsTitle")}>
 			<div className="product-list__layout">
 				<aside className="product-list__filters" aria-label={t("productFilters")}>
-					<fieldset className="product-list__filter-group">
-						<legend>{t("productCategories")}</legend>
-						<label>
-							<input
-								type="radio"
-								name="product-category"
-								checked={selectedFilter === null}
-								onChange={() => onSelectFilter(null)}
-							/>
-							{t("allProducts")}
-						</label>
-						{popularProductFilters.map(({ id, label }) => (
-							<label key={id}>
-								<input
-									type="radio"
-									name="product-category"
-									checked={selectedFilter === id}
-									onChange={() => onSelectFilter(id)}
-								/>
-								{t(label)}
-							</label>
-						))}
-					</fieldset>
-					<fieldset className="product-list__filter-group">
-						<legend>{t("sortProducts")}</legend>
-						<label>
-							<input
-								type="radio"
-								name="product-sort"
-								checked={sort === "featured"}
-								onChange={() => setSort("featured")}
-							/>
-							{t("featuredOrder")}
-						</label>
-						<label>
-							<input
-								type="radio"
-								name="product-sort"
-								checked={sort === "price-ascending"}
-								onChange={() => setSort("price-ascending")}
-							/>
-							{t("priceLowToHigh")}
-						</label>
-						<label>
-							<input
-								type="radio"
-								name="product-sort"
-								checked={sort === "price-descending"}
-								onChange={() => setSort("price-descending")}
-							/>
-							{t("priceHighToLow")}
-						</label>
-						<label>
-							<input
-								type="radio"
-								name="product-sort"
-								checked={sort === "name-ascending"}
-								onChange={() => setSort("name-ascending")}
-							/>
-							{t("nameAscending")}
-						</label>
-					</fieldset>
+					<ProductFilters
+						idPrefix="sidebar"
+						selectedFilter={selectedFilter}
+						onSelectFilter={onSelectFilter}
+						sort={sort}
+						onSelectSort={onSelectSort}
+					/>
 				</aside>
 				<div className="product-list__content">
 					{isLoading && (
