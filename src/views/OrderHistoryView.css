@@ -18,12 +18,15 @@
 
 .order-history__filters {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	gap: 8px;
 	margin: 24px 0;
+	overflow-x: auto;
+	padding-bottom: 4px;
 }
 
 .order-history__filter {
+	flex: 0 0 auto;
 	min-height: 40px;
 	padding: 0 14px;
 	border: 1px solid #d9ddd6;
