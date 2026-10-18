@@ -73,7 +73,6 @@
   text-align: right;
 }
 
-.checkout-view__payment-methods,
 .checkout-view__delivery-details {
   display: grid;
   gap: 12px;
@@ -83,23 +82,10 @@
   border-bottom: 1px solid #e5e7e3;
 }
 
-.checkout-view__payment-methods legend,
 .checkout-view__delivery-details legend {
   margin-bottom: 12px;
   color: #20231f;
   font-weight: 700;
-}
-
-.checkout-view__payment-methods label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #30372f;
-  cursor: pointer;
-}
-
-.checkout-view__payment-methods input {
-  accent-color: var(--brand-orange);
 }
 
 .checkout-view__delivery-details {

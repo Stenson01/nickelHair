@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { useLanguage } from "./i18n/useLanguage";
@@ -11,13 +11,16 @@ import CheckoutView from "./views/CheckoutView";
 import { isSupabaseConfigured } from "./services/supabase/client";
 import { supabaseService } from "./services/supabase/service";
 import LoginView from "./views/LoginView";
+import ForgotPasswordView from "./views/ForgotPasswordView";
+import PasswordResetView from "./views/PasswordResetView";
 import ProfileView from "./views/ProfileView";
 import ProductsDetailsView from "./views/ProductsDetailsView";
 import OrderHistoryView from "./views/OrderHistoryView";
+import AdminView from "./views/AdminView";
 import SignupView from "./views/SignupView";
 import "./App.css";
 
-type AppView = "store" | "login" | "signup" | "profile" | "product-details" | "cart" | "checkout" | "orders";
+type AppView = "store" | "login" | "signup" | "forgot-password" | "reset-password" | "profile" | "admin" | "product-details" | "cart" | "checkout" | "orders";
 
 type AppNavigationState = {
 	appNavigation: true;
@@ -36,7 +39,10 @@ function isAppView(value: unknown): value is AppView {
 	return value === "store" ||
 		value === "login" ||
 		value === "signup" ||
+		value === "forgot-password" ||
+		value === "reset-password" ||
 		value === "profile" ||
+		value === "admin" ||
 		value === "product-details" ||
 		value === "cart" ||
 		value === "checkout" ||
@@ -45,7 +51,9 @@ function isAppView(value: unknown): value is AppView {
 
 export default function App() {
   const { t } = useLanguage();
+  const hasRecordedPageView = useRef(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isStoreAdmin, setIsStoreAdmin] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<ProductFilter>(null);
   const [productSort, setProductSort] = useState<ProductSort>("featured");
   const [currentView, setCurrentView] = useState<AppView>("store");
@@ -56,6 +64,7 @@ export default function App() {
   const [pendingCartAddition, setPendingCartAddition] = useState<PendingCartAddition | null>(null);
   const [pendingViewAfterAuth, setPendingViewAfterAuth] = useState<AppView | null>(null);
   const [cartError, setCartError] = useState("");
+  const [cartConfirmation, setCartConfirmation] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
   const navigateToView = (
@@ -91,6 +100,12 @@ export default function App() {
   };
 
   useEffect(() => {
+    if (!cartConfirmation) return;
+    const timeoutId = window.setTimeout(() => setCartConfirmation(""), 4000);
+    return () => window.clearTimeout(timeoutId);
+  }, [cartConfirmation]);
+
+  useEffect(() => {
     const initialState: AppNavigationState = {
       appNavigation: true,
       hasPreviousAppView: false,
@@ -115,18 +130,54 @@ export default function App() {
     return () => window.removeEventListener("popstate", restoreView);
   }, []);
 
-  const recordProductEvent = async (
-    eventType: "product_click" | "add_to_cart",
-    product: Product,
-    eventSearchTerm?: string,
-  ) => {
+  useEffect(() => {
+    if (hasRecordedPageView.current) return;
+    hasRecordedPageView.current = true;
+
+    const pageViewCountedDayKey = "stenson-page-view-counted-day";
+    const visitDay = new Date().toISOString().slice(0, 10);
+    let claimedDailyVisit = false;
+
     try {
-      const { error } = await supabaseService.recordProductEvent(eventType, product, eventSearchTerm);
-      if (error) throw error;
+      window.localStorage.removeItem("stenson-analytics-consent");
+      window.localStorage.removeItem("stenson-visitor-id");
+      window.sessionStorage.removeItem("stenson-visitor-session-id");
+
+      for (let index = window.sessionStorage.length - 1; index >= 0; index -= 1) {
+        const key = window.sessionStorage.key(index);
+        if (key?.startsWith("stenson-analytics-")) {
+          window.sessionStorage.removeItem(key);
+        }
+      }
+
+      if (window.localStorage.getItem(pageViewCountedDayKey) === visitDay) return;
+
+      window.localStorage.setItem(pageViewCountedDayKey, visitDay);
+      claimedDailyVisit = true;
     } catch (error: unknown) {
-      console.error(`Unable to record ${eventType} analytics:`, error);
+      console.error("Unable to read or save the daily page-view marker:", error);
     }
-  };
+
+    if (!isSupabaseConfigured) return;
+
+    void (async () => {
+      try {
+        const { error } = await supabaseService.recordAnonymousPageView();
+        if (error) throw error;
+      } catch (error: unknown) {
+        if (claimedDailyVisit) {
+          try {
+            if (window.localStorage.getItem(pageViewCountedDayKey) === visitDay) {
+              window.localStorage.removeItem(pageViewCountedDayKey);
+            }
+          } catch (storageError: unknown) {
+            console.error("Unable to clear the failed daily page-view marker:", storageError);
+          }
+        }
+        console.error("Unable to record anonymous page view:", error);
+      }
+    })();
+  }, []);
 
   const handleSearchTermChange = (value: string) => {
     setSearchTerm(value);
@@ -134,42 +185,7 @@ export default function App() {
     if (currentView !== "store") navigateToView("store");
   };
 
-  useEffect(() => {
-    const query = searchTerm.trim();
-    if (!query || !isSupabaseConfigured) return;
-
-    let isCurrentSearch = true;
-    const timeoutId = window.setTimeout(() => {
-      void (async () => {
-        try {
-          const { data, error } = await supabaseService.searchProducts(query);
-          if (error) throw error;
-          if (!isCurrentSearch) return;
-
-          void (async () => {
-            try {
-              const { error: analyticsError } = await supabaseService.recordProductSearch(
-                query,
-                (data ?? []) as Product[],
-              );
-              if (analyticsError) throw analyticsError;
-            } catch (analyticsError: unknown) {
-              console.error("Unable to record product search analytics:", analyticsError);
-            }
-          })();
-        } catch (error: unknown) {
-          if (isCurrentSearch) console.error("Unable to record product search:", error);
-        }
-      })();
-    }, 300);
-
-    return () => {
-      isCurrentSearch = false;
-      window.clearTimeout(timeoutId);
-    };
-  }, [searchTerm]);
-
-  const persistCartAddition = async ({ product, quantity, searchTerm }: PendingCartAddition) => {
+  const persistCartAddition = async ({ product, quantity }: PendingCartAddition) => {
     const productCode = getProductCode(product);
     if (!productCode) {
       setCartError(t("productUnavailableForCart"));
@@ -178,7 +194,6 @@ export default function App() {
 
     try {
       await supabaseService.addCartItem(productCode, quantity);
-      void recordProductEvent("add_to_cart", product, searchTerm);
       setCartItems((items) => {
         const existingItem = items.find((item) => item.key === productCode);
         if (existingItem) {
@@ -189,6 +204,8 @@ export default function App() {
         return [...items, { key: productCode, product, quantity }];
       });
       setCartError("");
+      const productName = product.name ?? product.title ?? product.product_name ?? t("unnamedProduct");
+      setCartConfirmation(`${t("productAddedToCart")}: ${productName}`);
       return true;
     } catch (error: unknown) {
       setCartError(error instanceof Error ? error.message : t("unableToLoadCart"));
@@ -228,8 +245,11 @@ export default function App() {
     if (!isSupabaseConfigured) return;
 
     let isMounted = true;
-    const { data: authListener } = supabaseService.client.auth.onAuthStateChange((_event, session) => {
+    const { data: authListener } = supabaseService.client.auth.onAuthStateChange((event, session) => {
       setCurrentUser(session?.user ?? null);
+      if (event === "PASSWORD_RECOVERY") {
+        window.setTimeout(() => navigateToView("reset-password", null, true), 0);
+      }
     });
 
     void supabaseService.getCurrentUser().then(({ data, error }) => {
@@ -252,6 +272,27 @@ export default function App() {
       authListener.subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (!currentUser) {
+      setIsStoreAdmin(false);
+      return;
+    }
+
+    let isMounted = true;
+    void supabaseService.isStoreAdmin().then((allowed) => {
+      if (isMounted) setIsStoreAdmin(allowed);
+    }).catch((error: unknown) => {
+      if (isMounted) {
+        setIsStoreAdmin(false);
+        console.error("Unable to verify store administrator access:", error);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentUser]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -314,7 +355,9 @@ export default function App() {
     <>
       {currentView === "store" && <MyTopAppBar
         currentUser={currentUser}
-        onOpenAccount={() => navigateToView(currentUser ? "profile" : "login")}
+        onOpenAccount={() => {
+          navigateToView(currentUser ? "profile" : "login");
+        }}
         onOpenCart={() => {
           navigateToView("cart");
           if (currentUser) setCartRefreshVersion((version) => version + 1);
@@ -348,6 +391,11 @@ export default function App() {
         </div>
       )}
       {cartError && <p className="app-cart-error" role="alert">{cartError}</p>}
+      {cartConfirmation && (
+        <p className="app-cart-confirmation" role="status" aria-live="polite">
+          {cartConfirmation}
+        </p>
+      )}
       {currentView === "store" && (
         <main className="app-main app-main--store">
           <MyProductList
@@ -358,7 +406,6 @@ export default function App() {
             searchTerm={searchTerm}
             onAddToCart={addToCart}
             onSelectProduct={(product) => {
-              void recordProductEvent("product_click", product);
               navigateToView("product-details", product);
             }}
           />
@@ -367,7 +414,9 @@ export default function App() {
       {currentView === "product-details" && selectedProduct && (
         <ProductsDetailsView
           product={selectedProduct}
+          currentUser={currentUser}
           onAddToCart={addToCart}
+          onSelectProduct={(product) => navigateToView("product-details", product)}
         />
       )}
       {currentView === "cart" && (
@@ -382,10 +431,6 @@ export default function App() {
       {currentView === "checkout" && (
         <CheckoutView
           items={cartItems}
-          onStartPayment={async () => {
-            const { paymentUrl } = await supabaseService.startMonCashCheckout();
-            window.location.assign(paymentUrl);
-          }}
           onPlaceCashOnDeliveryOrder={async (details) => {
             const { orderId } = await supabaseService.placeCashOnDeliveryOrder(details);
             return orderId;
@@ -400,8 +445,15 @@ export default function App() {
       {currentView === "login" && (
         <LoginView
           onSwitchToSignup={() => navigateToView("signup")}
+          onForgotPassword={() => navigateToView("forgot-password")}
           onSignedIn={() => void handleSignedIn()}
         />
+      )}
+      {currentView === "forgot-password" && (
+        <ForgotPasswordView onBackToLogin={() => navigateToView("login")} />
+      )}
+      {currentView === "reset-password" && (
+        <PasswordResetView onPasswordUpdated={() => navigateToView("store", null, true)} />
       )}
       {currentView === "signup" && (
         <SignupView
@@ -409,9 +461,12 @@ export default function App() {
           onSignedUp={() => void handleSignedIn()}
         />
       )}
+      {currentView === "admin" && <AdminView />}
       {currentView === "profile" && currentUser && (
         <ProfileView
           user={currentUser}
+          isStoreAdmin={isStoreAdmin}
+          onOpenAdmin={() => navigateToView("admin")}
           onSignOut={() => {
             setCurrentUser(null);
             navigateToView("store", null, true);

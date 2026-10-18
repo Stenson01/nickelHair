@@ -13,10 +13,15 @@ export type Product = {
 	id?: string | number;
 	code?: string | number;
 	product_code?: string | number;
+	category_id?: string;
 	name?: string;
 	title?: string;
 	product_name?: string;
 	description?: string;
+	what_it_does?: string | null;
+	how_to_use?: string | null;
+	ingredients?: string | null;
+	suitable_for?: string | null;
 	price?: string | number;
 	image_url?: string;
 	image?: string;

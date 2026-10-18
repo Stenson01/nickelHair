@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { supabaseService } from "../services/supabase/service";
 import { useLanguage } from "../i18n/useLanguage";
 import "./AuthView.css";
@@ -12,6 +13,7 @@ export default function SignupView({ onSwitchToLogin, onSignedUp }: SignupViewPr
 	const { t } = useLanguage();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,15 +61,28 @@ export default function SignupView({ onSwitchToLogin, onSignedUp }: SignupViewPr
 
 					<label className="auth-view__field">
 						{t("password")}
-						<input
-							type="password"
-							name="new-password"
-							autoComplete="new-password"
-							minLength={6}
-							value={password}
-							onChange={(event) => setPassword(event.target.value)}
-							required
-						/>
+						<span className="auth-view__password-control">
+							<input
+								type={isPasswordVisible ? "text" : "password"}
+								name="new-password"
+								autoComplete="new-password"
+								minLength={6}
+								value={password}
+								onChange={(event) => setPassword(event.target.value)}
+								required
+							/>
+							<button
+								className="auth-view__password-toggle"
+								type="button"
+								aria-label={isPasswordVisible ? t("hidePassword") : t("showPassword")}
+								aria-pressed={isPasswordVisible}
+								onClick={() => setIsPasswordVisible((visible) => !visible)}
+							>
+								{isPasswordVisible
+									? <EyeOff aria-hidden="true" />
+									: <Eye aria-hidden="true" />}
+							</button>
+						</span>
 					</label>
 
 					{errorMessage && <p className="auth-view__message" role="alert">{errorMessage}</p>}

@@ -48,6 +48,10 @@ export default function OrderHistoryView() {
 	const [filter, setFilter] = useState<OrderFilter>("recent");
 	const [isLoading, setIsLoading] = useState(true);
 	const [errorMessage, setErrorMessage] = useState("");
+	const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
+	const [cancellationReason, setCancellationReason] = useState("");
+	const [isCancelling, setIsCancelling] = useState(false);
+	const [cancellationError, setCancellationError] = useState("");
 	const dateLocale = language === "fr" ? "fr-HT" : "ht-HT";
 	const currencyLocale = language === "fr" ? "fr-HT" : "ht-HT";
 
@@ -76,6 +80,30 @@ export default function OrderHistoryView() {
 		() => orders.filter((order) => orderMatchesFilter(order, filter)),
 		[filter, orders],
 	);
+
+	const handleCancelOrder = async (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		if (!cancellingOrderId) return;
+
+		setCancellationError("");
+		setIsCancelling(true);
+		try {
+			await supabaseService.cancelCustomerOrder(cancellingOrderId, cancellationReason);
+			setOrders((currentOrders) =>
+				currentOrders.map((order) =>
+					order.id === cancellingOrderId
+						? { ...order, status: "cancelled", cancellation_reason: cancellationReason.trim() }
+						: order,
+				),
+			);
+			setCancellingOrderId(null);
+			setCancellationReason("");
+		} catch (error: unknown) {
+			setCancellationError(error instanceof Error ? error.message : t("orderCancelError"));
+		} finally {
+			setIsCancelling(false);
+		}
+	};
 
 	return (
 		<main className="order-history">
@@ -140,6 +168,52 @@ export default function OrderHistoryView() {
 									<span>{t("deliveryAddress")}: </span>
 									{order.delivery_address}
 								</p>
+							)}
+							{order.status === "cancelled" && order.cancellation_reason && (
+								<p className="order-history__cancellation-reason">
+									<span>{t("cancellationReason")}: </span>
+									{order.cancellation_reason}
+								</p>
+							)}
+							{order.status === "pending" && cancellingOrderId !== order.id && (
+								<button
+									className="order-history__cancel-button"
+									type="button"
+									onClick={() => {
+										setCancellingOrderId(order.id);
+										setCancellationReason("");
+										setCancellationError("");
+									}}
+								>
+									{t("cancelOrder")}
+								</button>
+							)}
+							{cancellingOrderId === order.id && (
+								<form className="order-history__cancel-form" onSubmit={(event) => void handleCancelOrder(event)}>
+									<label>
+										{t("cancellationReason")}
+										<textarea
+											maxLength={500}
+											required
+											rows={3}
+											value={cancellationReason}
+											onChange={(event) => setCancellationReason(event.target.value)}
+										/>
+									</label>
+									{cancellationError && (
+										<p className="order-history__message order-history__message--error" role="alert">
+											{cancellationError}
+										</p>
+									)}
+									<div className="order-history__cancel-actions">
+										<button type="button" onClick={() => setCancellingOrderId(null)}>
+											{t("cancel")}
+										</button>
+										<button type="submit" disabled={isCancelling || !cancellationReason.trim()}>
+											{isCancelling ? t("cancellingOrder") : t("confirmOrderCancellation")}
+										</button>
+									</div>
+								</form>
 							)}
 						</li>
 					))}

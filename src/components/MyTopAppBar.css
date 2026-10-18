@@ -215,6 +215,37 @@
   gap: 8px;
 }
 
+.top-bar__orders-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid rgb(255 255 255 / 55%);
+  border-radius: 4px;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.top-bar__orders-button:hover {
+  background: rgb(255 255 255 / 16%);
+}
+
+.top-bar__orders-button:focus-visible {
+  outline: 2px solid var(--brand-orange-focus);
+  outline-offset: 2px;
+}
+
+.top-bar__orders-button svg {
+  width: 18px;
+  height: 18px;
+}
+
 .top-bar__search--mobile {
   display: none;
 }
@@ -247,10 +278,8 @@
     width: 100%;
     margin-top: 10px;
   }
-}
 
-@media (min-width: 768px) {
-  .top-bar__menu {
+  .top-bar__orders-button {
     display: none;
   }
 }

@@ -1,6 +1,6 @@
 import type { User } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
-import { Menu, Search, ShoppingBasket, UserRound } from "lucide-react";
+import { ClipboardList, Menu, Search, ShoppingBasket, UserRound } from "lucide-react";
 import { useLanguage } from "../i18n/useLanguage";
 import ProductFilters from "./ProductFilters";
 import type { ProductFilter, ProductSort } from "./productFilterTypes";
@@ -94,7 +94,7 @@ export default function MyTopAppBar({
 	const openOrders = () => {
 		setIsMenuOpen(false);
 		onOpenOrders();
-		menuButtonRef.current?.focus();
+		if (isMenuOpen) menuButtonRef.current?.focus();
 	};
 
 	return (
@@ -144,6 +144,14 @@ export default function MyTopAppBar({
 				{renderSearchForm("desktop")}
 
 				<div className="top-bar__actions">
+					<button
+						className="top-bar__orders-button"
+						type="button"
+						onClick={openOrders}
+					>
+						<ClipboardList aria-hidden="true" />
+						<span>{t("myOrders")}</span>
+					</button>
 					<button
 						className="top-bar__icon-button"
 						type="button"

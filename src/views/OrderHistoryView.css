@@ -160,6 +160,92 @@
 	font-weight: 600;
 }
 
+.order-history__cancellation-reason {
+	margin: 12px 0 0;
+	color: #62685f;
+	font-size: 14px;
+	overflow-wrap: anywhere;
+}
+
+.order-history__cancellation-reason span {
+	color: #30372f;
+	font-weight: 600;
+}
+
+.order-history__cancel-button {
+	margin-top: 16px;
+	padding: 8px 12px;
+	border: 1px solid #a12f2f;
+	border-radius: 4px;
+	color: #a12f2f;
+	background: #fff;
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.order-history__cancel-button:hover {
+	background: #fff4f2;
+}
+
+.order-history__cancel-form {
+	display: grid;
+	gap: 12px;
+	margin-top: 16px;
+	padding: 14px;
+	border: 1px solid #e1e5df;
+	border-radius: 8px;
+	background: #fafbf9;
+}
+
+.order-history__cancel-form label {
+	display: grid;
+	gap: 7px;
+	color: #30372f;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.order-history__cancel-form textarea {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid #cfd3cc;
+	border-radius: 4px;
+	color: #20231f;
+	background: #fff;
+	font: inherit;
+	font-weight: 400;
+	box-sizing: border-box;
+}
+
+.order-history__cancel-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.order-history__cancel-actions button {
+	min-height: 38px;
+	padding: 0 12px;
+	border: 1px solid #cfd3cc;
+	border-radius: 4px;
+	color: #30372f;
+	background: #fff;
+	font: inherit;
+	cursor: pointer;
+}
+
+.order-history__cancel-actions button[type="submit"] {
+	border-color: #a12f2f;
+	color: #fff;
+	background: #a12f2f;
+}
+
+.order-history__cancel-actions button:disabled {
+	cursor: wait;
+	opacity: 0.65;
+}
+
 @media (max-width: 640px) {
 	.order-history {
 		width: min(100% - 32px, 900px);

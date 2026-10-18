@@ -5,10 +5,11 @@ import { type Language, translations } from "./translations";
 const languageStorageKey = "stenson-language";
 
 function getInitialLanguage(): Language {
-	if (typeof window === "undefined") return "fr";
+	if (typeof window === "undefined") return "ht";
 
 	const savedLanguage = window.localStorage.getItem(languageStorageKey);
-	return savedLanguage === "ht" ? "ht" : "fr";
+	// Default to Haitian Creole (ht) when there is no saved preference
+	return savedLanguage === "fr" ? "fr" : "ht";
 }
 
 type LanguageProviderProps = {

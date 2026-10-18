@@ -5,25 +5,20 @@ import { formatCartAmount, getCartSubtotal } from "./cartUtils";
 import type { CashOnDeliveryDetails } from "../services/supabase/service";
 import "./CheckoutView.css";
 
-type PaymentMethod = "moncash" | "cash-on-delivery";
-
 type CheckoutViewProps = {
 	items: CartItem[];
-	onStartPayment: () => Promise<void>;
 	onPlaceCashOnDeliveryOrder: (details: CashOnDeliveryDetails) => Promise<string>;
 	onContinueShopping: () => void;
 };
 
 export default function CheckoutView({
 	items,
-	onStartPayment,
 	onPlaceCashOnDeliveryOrder,
 	onContinueShopping,
 }: CheckoutViewProps) {
 	const { language, t } = useLanguage();
 	const [errorMessage, setErrorMessage] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("moncash");
 	const [deliveryName, setDeliveryName] = useState("");
 	const [deliveryPhone, setDeliveryPhone] = useState("");
 	const [deliveryAddress, setDeliveryAddress] = useState("");
@@ -39,11 +34,6 @@ export default function CheckoutView({
 		setErrorMessage("");
 		setIsSubmitting(true);
 		try {
-			if (paymentMethod === "moncash") {
-				await onStartPayment();
-				return;
-			}
-
 			const orderId = await onPlaceCashOnDeliveryOrder({
 				name: deliveryName.trim(),
 				phone: deliveryPhone.trim(),
@@ -112,74 +102,47 @@ export default function CheckoutView({
 				<p className="checkout-view__note">{t("checkoutTotalNote")}</p>
 				{errorMessage && <p className="checkout-view__error" role="alert">{errorMessage}</p>}
 				<form onSubmit={(event) => void handleSubmit(event)}>
-					<fieldset className="checkout-view__payment-methods">
-						<legend>{t("paymentMethod")}</legend>
+					<fieldset className="checkout-view__delivery-details">
+						<legend>{t("deliveryDetails")}</legend>
 						<label>
+							{t("deliveryName")}
 							<input
-								type="radio"
-								name="payment-method"
-								value="moncash"
-								checked={paymentMethod === "moncash"}
-								onChange={() => setPaymentMethod("moncash")}
+								autoComplete="name"
+								maxLength={120}
+								required
+								value={deliveryName}
+								onChange={(event) => setDeliveryName(event.target.value)}
 							/>
-							{t("payWithMonCash")}
 						</label>
 						<label>
+							{t("deliveryPhone")}
 							<input
-								type="radio"
-								name="payment-method"
-								value="cash-on-delivery"
-								checked={paymentMethod === "cash-on-delivery"}
-								onChange={() => setPaymentMethod("cash-on-delivery")}
+								autoComplete="tel"
+								type="tel"
+								maxLength={40}
+								required
+								value={deliveryPhone}
+								onChange={(event) => setDeliveryPhone(event.target.value)}
 							/>
-							{t("cashOnDelivery")}
+						</label>
+						<label>
+							{t("deliveryAddress")}
+							<textarea
+								autoComplete="street-address"
+								maxLength={500}
+								required
+								rows={3}
+								value={deliveryAddress}
+								onChange={(event) => setDeliveryAddress(event.target.value)}
+							/>
 						</label>
 					</fieldset>
-					{paymentMethod === "cash-on-delivery" && (
-						<fieldset className="checkout-view__delivery-details">
-							<legend>{t("deliveryDetails")}</legend>
-							<label>
-								{t("deliveryName")}
-								<input
-									autoComplete="name"
-									maxLength={120}
-									required
-									value={deliveryName}
-									onChange={(event) => setDeliveryName(event.target.value)}
-								/>
-							</label>
-							<label>
-								{t("deliveryPhone")}
-								<input
-									autoComplete="tel"
-									type="tel"
-									maxLength={40}
-									required
-									value={deliveryPhone}
-									onChange={(event) => setDeliveryPhone(event.target.value)}
-								/>
-							</label>
-							<label>
-								{t("deliveryAddress")}
-								<textarea
-									autoComplete="street-address"
-									maxLength={500}
-									required
-									rows={3}
-									value={deliveryAddress}
-									onChange={(event) => setDeliveryAddress(event.target.value)}
-								/>
-							</label>
-						</fieldset>
-					)}
 					<button
 						className="add-to-cart-button checkout-view__pay"
 						type="submit"
 						disabled={isSubmitting || subtotal === null || items.length === 0}
 					>
-						{isSubmitting
-							? paymentMethod === "moncash" ? t("startingPayment") : t("placingOrder")
-							: paymentMethod === "moncash" ? t("payWithMonCash") : t("placeCashOrder")}
+						{isSubmitting ? t("placingOrder") : t("placeCashOrder")}
 					</button>
 				</form>
 			</section>

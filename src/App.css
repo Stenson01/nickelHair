@@ -57,6 +57,22 @@
   color: #a12f2f;
 }
 
+.app-cart-confirmation {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 25;
+  max-width: min(420px, calc(100vw - 40px));
+  margin: 0;
+  padding: 14px 18px;
+  border: 1px solid #b8d9c2;
+  border-radius: 8px;
+  color: #174d2b;
+  background: #f0faf2;
+  box-shadow: 0 6px 24px rgb(32 35 31 / 16%);
+  font-weight: 600;
+}
+
 @media (max-width: 640px) {
   .app-main {
     width: min(100% - 32px, 1200px);
@@ -76,6 +92,13 @@
   .app-home-navigation {
     width: min(100% - 32px, 900px);
   }
+
+  .app-cart-confirmation {
+    right: 8px;
+    bottom: 8px;
+    max-width: calc(100vw - 16px);
+  }
+
 }
 
 .logo {

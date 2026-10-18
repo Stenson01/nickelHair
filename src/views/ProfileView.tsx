@@ -6,10 +6,12 @@ import "./ProfileView.css";
 
 type ProfileViewProps = {
 	user: User;
+	isStoreAdmin: boolean;
+	onOpenAdmin: () => void;
 	onSignOut: () => void;
 };
 
-export default function ProfileView({ user, onSignOut }: ProfileViewProps) {
+export default function ProfileView({ user, isStoreAdmin, onOpenAdmin, onSignOut }: ProfileViewProps) {
 	const { t } = useLanguage();
 	const [errorMessage, setErrorMessage] = useState("");
 	const [isSigningOut, setIsSigningOut] = useState(false);
@@ -50,6 +52,11 @@ export default function ProfileView({ user, onSignOut }: ProfileViewProps) {
 						<span>{t("emailAddress")}</span>
 						{user.email}
 					</p>
+				)}
+				{isStoreAdmin && (
+					<button className="profile-view__admin-access" type="button" onClick={onOpenAdmin}>
+						{t("adminTitle")}
+					</button>
 				)}
 				{errorMessage && <p className="profile-view__error" role="alert">{errorMessage}</p>}
 				{isSignOutConfirmationOpen ? (

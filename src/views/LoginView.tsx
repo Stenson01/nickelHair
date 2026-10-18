@@ -1,17 +1,20 @@
 import { useState, type FormEvent } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { supabaseService } from "../services/supabase/service";
 import { useLanguage } from "../i18n/useLanguage";
 import "./AuthView.css";
 
 type LoginViewProps = {
 	onSwitchToSignup: () => void;
+	onForgotPassword: () => void;
 	onSignedIn: () => void;
 };
 
-export default function LoginView({ onSwitchToSignup, onSignedIn }: LoginViewProps) {
+export default function LoginView({ onSwitchToSignup, onForgotPassword, onSignedIn }: LoginViewProps) {
 	const { t } = useLanguage();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -54,15 +57,36 @@ export default function LoginView({ onSwitchToSignup, onSignedIn }: LoginViewPro
 
 					<label className="auth-view__field">
 						{t("password")}
-						<input
-							type="password"
-							name="password"
-							autoComplete="current-password"
-							value={password}
-							onChange={(event) => setPassword(event.target.value)}
-							required
-						/>
+						<span className="auth-view__password-control">
+							<input
+								type={isPasswordVisible ? "text" : "password"}
+								name="password"
+								autoComplete="current-password"
+								value={password}
+								onChange={(event) => setPassword(event.target.value)}
+								required
+							/>
+							<button
+								className="auth-view__password-toggle"
+								type="button"
+								aria-label={isPasswordVisible ? t("hidePassword") : t("showPassword")}
+								aria-pressed={isPasswordVisible}
+								onClick={() => setIsPasswordVisible((visible) => !visible)}
+							>
+								{isPasswordVisible
+									? <EyeOff aria-hidden="true" />
+									: <Eye aria-hidden="true" />}
+							</button>
+						</span>
 					</label>
+
+					<button
+						className="auth-view__switch auth-view__forgot-password"
+						type="button"
+						onClick={onForgotPassword}
+					>
+						{t("forgotPassword")}
+					</button>
 
 					{errorMessage && <p className="auth-view__message" role="alert">{errorMessage}</p>}
 					<button className="auth-view__submit" type="submit" disabled={isSubmitting}>
